@@ -87,7 +87,7 @@ run_plugin_name();
 
 function get_stock_info($args)
 {
-	require_once ABSPATH . 'wp-content/plugins/massive-stock-widgets/includes/API.php';
+	require_once(ABSPATH . 'wp-content/plugins/massive-stock-widgets/includes/api.php');
 
 	$symbols_string = $args["assets"];
 	$symbols = explode(",", $symbols_string);
@@ -109,4 +109,4 @@ function get_stock_info($args)
 	return json_encode($stock_data);
 }
 
-add_shortcode('stock_data', 'get_stock_info');
+add_shortcode('stock-data', 'get_stock_info');
