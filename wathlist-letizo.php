@@ -85,14 +85,10 @@ function run_plugin_name()
 run_plugin_name();
 
 
-function get_stock_info($args)
+
+function get_api_config()
 {
-	require_once(ABSPATH . 'wp-content/plugins/massive-stock-widgets/includes/api.php');
-
-	$symbols_string = $args["assets"];
-	$symbols = explode(",", $symbols_string);
-
-	$config = array(
+	return array(
 		'auth' => array(
 			'crumb' => 'Fpzh2QPx82b',
 			'cookie' => 'd=AQABBLBbhGQCEGiyQXDnrRd9f4RJL1-0Hw8FEgEBAQGthWSOZFkeyyMA_eMAAA&S=AQAAAvNs5-0hNumW6l1ASUuHtQE',
@@ -101,12 +97,101 @@ function get_stock_info($args)
 
 		)
 	);
+}
+
+
+function format_stock_data($stock_data)
+{
+	$formatted_data = [];
+	$fields = [
+		"symbol",
+		"company_name",
+		"type",
+		"exchange",
+		"exchange_name",
+		"price",
+		"currency",
+		"open",
+		"close",
+		"low",
+		"high",
+		"previous_close",
+		"change",
+		"change_percent",
+		"volume",
+		"market_cap",
+		"52_week_low",
+		"52_week_low_change",
+		"52_week_low_change_percent",
+		"52_week_high",
+		"52_week_high_change",
+		"52_week_high_change_percent",
+		"shares_outstanding",
+		"eps_ttm",
+		"dividend_yield_ta",
+		"dividend_rate_ta",
+		"last_update"
+	];
+
+	foreach ($stock_data as $symbol => $data) {
+		$formatted_item = [];
+		foreach ($fields as $field) {
+			$formatted_item[$field] = $data["quote"][$field];
+		}
+		$formatted_data[] = $formatted_item;
+	}
+
+	return $formatted_data;
+}
+
+
+function render_stock_assets_json($args)
+{
+	require_once(ABSPATH . 'wp-content/plugins/massive-stock-widgets/includes/api.php');
+
+	$symbols_string = $args["assets"];
+	$symbols = explode(",", $symbols_string);
+
+	$config = get_api_config();
 
 	$api = new MassiveStockWidgets\API($config);
 	$api->auth_check();
 
 	$stock_data = $api->batch_request($symbols);
-	return json_encode($stock_data);
+
+	$formatted_data = format_stock_data($stock_data);
+
+	return json_encode($formatted_data);
 }
 
-add_shortcode('stock-data', 'get_stock_info');
+
+add_shortcode('stock-data', 'render_stock_assets_json');
+
+
+function letizo_get_stocks_data()
+{
+	if (isset($_REQUEST['action'], $_REQUEST['query']) && $_REQUEST['action'] === 'watchlist_letizo_get_stocks_data') {
+		$symbols_string = $_REQUEST['query'];
+		$user_id = get_current_user_id();
+		$symbols = explode(",", $symbols_string);
+
+		$config = get_api_config();
+
+		$api = new MassiveStockWidgets\API($config);
+		$api->auth_check();
+
+		$stock_data = $api->batch_request($symbols);
+
+		$formatted_data = [
+			'current_user_id' => $user_id,
+			'stocks_data' => format_stock_data($stock_data)
+		];
+
+		echo json_encode($formatted_data);
+	}
+
+	die();
+}
+
+add_action('wp_ajax_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
+add_action('wp_ajax_nopriv_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
