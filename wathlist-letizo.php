@@ -170,8 +170,8 @@ add_shortcode('stock-data', 'render_stock_assets_json');
 
 function letizo_get_stocks_data()
 {
-	if (isset($_REQUEST['action'], $_REQUEST['query']) && $_REQUEST['action'] === 'watchlist_letizo_get_stocks_data') {
-		$symbols_string = $_REQUEST['query'];
+	if (isset($_REQUEST['symbols_string'])) {
+		$symbols_string = $_REQUEST['symbols_string'];
 		$user_id = get_current_user_id();
 		$symbols = explode(",", $symbols_string);
 
@@ -187,11 +187,47 @@ function letizo_get_stocks_data()
 			'stocks_data' => format_stock_data($stock_data)
 		];
 
+
+		$user_symbols_meta = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
+
+		if ($user_symbols_meta) {
+
+			update_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string);
+		} else {
+
+			add_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string, true);
+		}
+
 		echo json_encode($formatted_data);
 	}
 
 	die();
 }
 
+
 add_action('wp_ajax_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
 add_action('wp_ajax_nopriv_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
+
+
+function letizo_get_stocks_data_by_userid()
+{
+	if (isset($_REQUEST['user_id'])) {
+		$user_id = $_REQUEST['user_id'];
+		$symbols_string = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
+
+		if ($symbols_string) {
+
+			echo $symbols_string;
+		} else {
+
+			echo "Мета-поля не существует для указанного пользователя.";
+		}
+	} else {
+
+		echo "Параметр 'user_id' не был передан в запросе.";
+	}
+
+	die();
+}
+add_action('wp_ajax_watchlist_letizo_get_stocks_data_by_userid', 'letizo_get_stocks_data_by_userid');
+add_action('wp_ajax_nopriv_watchlist_letizo_get_stocks_data_by_userid', 'letizo_get_stocks_data_by_userid');
