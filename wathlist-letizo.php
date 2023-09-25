@@ -228,7 +228,7 @@ add_action('wp_ajax_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data')
 add_action('wp_ajax_nopriv_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
 
 
-function letizo_save_stocks_data_by_userid()
+function letizo_save_stocks_data_by_user_id()
 {
 	$user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : '';
 	$symbols_string = isset($_REQUEST['symbols_string']) ? $_REQUEST['symbols_string'] : '';
@@ -250,5 +250,5 @@ function letizo_save_stocks_data_by_userid()
 	die();
 }
 
-add_action('wp_ajax_watchlist_letizo_save_stocks_data_by_userid', 'letizo_save_stocks_data_by_userid');
-add_action('wp_ajax_nopriv_watchlist_letizo_save_stocks_data_by_userid', 'letizo_save_stocks_data_by_userid');
+add_action('wp_ajax_watchlist_letizo_save_stocks_data_by_user_id', 'letizo_save_stocks_data_by_user_id');
+add_action('wp_ajax_nopriv_watchlist_letizo_save_stocks_data_by_user_id', 'letizo_save_stocks_data_by_user_id');
