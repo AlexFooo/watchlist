@@ -135,10 +135,21 @@ function format_stock_data($stock_data)
 
 	foreach ($stock_data as $symbol => $data) {
 		$formatted_item = [];
+		$skip_stock = false;
+
 		foreach ($fields as $field) {
+
+			if ($data["quote"][$field] === null) {
+				$skip_stock = true;
+				break;
+			}
+
 			$formatted_item[$field] = $data["quote"][$field];
 		}
-		$formatted_data[] = $formatted_item;
+
+		if (!$skip_stock) {
+			$formatted_data[] = $formatted_item;
+		}
 	}
 
 	return $formatted_data;
