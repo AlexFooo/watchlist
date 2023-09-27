@@ -80,7 +80,6 @@ function run_plugin_name()
 
 	$plugin = new Plugin_Name();
 	$plugin->run();
-
 }
 run_plugin_name();
 
@@ -93,9 +92,7 @@ function get_api_config()
 			'crumb' => 'Fpzh2QPx82b',
 			'cookie' => 'd=AQABBLBbhGQCEGiyQXDnrRd9f4RJL1-0Hw8FEgEBAQGthWSOZFkeyyMA_eMAAA&S=AQAAAvNs5-0hNumW6l1ASUuHtQE',
 		),
-		'assets' => array(
-
-		)
+		'assets' => array()
 	);
 }
 
@@ -263,3 +260,21 @@ function letizo_save_stocks_data_by_user_id()
 
 add_action('wp_ajax_watchlist_letizo_save_stocks_data_by_user_id', 'letizo_save_stocks_data_by_user_id');
 add_action('wp_ajax_nopriv_watchlist_letizo_save_stocks_data_by_user_id', 'letizo_save_stocks_data_by_user_id');
+
+
+
+function render_letizo_watchlist_shortcode($atts, $content = null)
+{
+
+	$element_id =  'app';
+
+	$script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
+	$css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
+	$html_tag = '<div id="' . $element_id . '"></div> ';
+	$script_tag = '<script type="module" src="' . $script_src . '"></script> ';
+	$css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
+
+
+	return $html_tag . $script_tag . $css_tag;
+}
+add_shortcode('letizo-watchlist', 'render_letizo_watchlist_shortcode');
