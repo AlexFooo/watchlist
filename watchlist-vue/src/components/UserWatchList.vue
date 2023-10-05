@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-3xl mx-auto">
+  <div class="mx-auto px-4">
     <div class="wathhlist-top-bar bg-slate-100 overflow-hidden">
       <Transition
         mode="out-in"
@@ -147,8 +147,7 @@
             handle=".handle"
           >
             <template #header>
-              <div class="py-2"><h1 class="font-bold text-2xl">Your watchlist</h1></div>
-              <div class="flex gap-2 mb-2">
+              <div class="flex gap-2 py-3">
                 <button
                   :class="
                     stockType === selectedStocksType ? 'bg-red-600 text-white' : 'text-slate-500'
@@ -160,6 +159,10 @@
                 >
                   {{ stockType }}
                 </button>
+              </div>
+              <div class="px-4 py-1 border-y flex gap-2">
+                <div>COMPANY</div>
+                <div>LAST</div>
               </div>
               <div v-if="userStocks.length === 0">
                 <h2 class="text-lg text-center py-4 text-slate-500">No stocks added</h2>
@@ -244,25 +247,29 @@
                         </svg>
                       </div>
                     </div>
-                    <div v-else class="watchlist-item-right flex flex-wrap justify-end">
-                      <div
-                        class="item-price flex justify-end w-full font-sans text-base font-semibold text-black leading-none"
-                      >
-                        ${{ stock.price }}
-                      </div>
-                      <div
-                        v-if="stock.change"
-                        class="item-change font-sans text-sm font-normal leading-none"
-                        :class="stock.change > 0 ? 'text-[#12A600]' : 'text-[#FF3A3A]'"
-                      >
-                        {{ stock.change.toFixed(2) }}
-                      </div>
-                      <div
-                        v-if="stock.change_percent"
-                        class="item-change-percent ml-1 font-sans text-sm font-normal leading-none"
-                        :class="stock.change > 0 ? 'text-[#12A600]' : 'text-[#FF3A3A]'"
-                      >
-                        {{ stock.change_percent.toFixed(2) }}%
+                    <div v-else class="watchlist-item-right">
+                      <div class="flex flex-wrap justify-end">
+                        <div
+                          class="item-price flex justify-end w-full font-sans text-base font-semibold text-black leading-none"
+                        >
+                          ${{ stock.price }}
+                        </div>
+                        <div
+                          v-if="stock.change"
+                          class="item-change font-sans text-sm font-normal leading-none"
+                          :class="stock.change > 0 ? 'text-[#12A600]' : 'text-[#FF3A3A]'"
+                        >
+                          {{ stock.change.toFixed(2) }}
+                        </div>
+                        <div
+                          v-if="stock.change_percent"
+                          class="item-change-percent ml-1 font-sans text-sm font-normal leading-none"
+                          :class="stock.change > 0 ? 'text-[#12A600]' : 'text-[#FF3A3A]'"
+                        >
+                          {{ stock.change_percent.toFixed(2) }}%
+                        </div>
+                        <div>{{ formatter.format(stock.market_cap) }}</div>
+                        <div><a class="bg-green-500 px-4 py-1"> Trade</a></div>
                       </div>
                     </div>
                   </Transition>
@@ -402,4 +409,6 @@ const stockTypes = computed(() => {
   return Array.from(userStocksTypes)
 })
 const selectedStocksType = ref<string>(stockTypes.value[0])
+
+let formatter = Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: 6 })
 </script>

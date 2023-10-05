@@ -8,7 +8,13 @@
       <slot name="image" v-if="slots.image" />
       <img
         v-else
-        :src="`https://letizo.com/wp-content/uploads/massive-stock-widgets/${stock.symbol}.svg`"
+        v-lazy="{
+          src: `https://letizo.com/wp-content/uploads/massive-stock-widgets/${stock.symbol}.svg`,
+          loading: 'your loading image url',
+          error: `https://letizo.com/wp-content/plugins/massive-stock-widgets/assets/public/img/placeholders/${stock.symbol.charAt(
+            0
+          )}.svg`
+        }"
         alt=""
         class="w-9 rounded-full"
       />
