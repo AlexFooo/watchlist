@@ -157,7 +157,7 @@
                         <div class="md:flex hidden md:w-24">
                           {{ formatter.format(stock.market_cap) }}
                         </div>
-                        <div class="referal-link">
+                        <div class="trade-referal-link">
                           
                         </div>
                       </div>
