@@ -99,57 +99,59 @@ function get_api_config()
 
 function format_stock_data($stock_data)
 {
-	$formatted_data = [];
-	$fields = [
-		"symbol",
-		"company_name",
-		"type",
-		"exchange",
-		"exchange_name",
-		"price",
-		"currency",
-		"open",
-		"close",
-		"low",
-		"high",
-		"previous_close",
-		"change",
-		"change_percent",
-		"volume",
-		"market_cap",
-		"52_week_low",
-		"52_week_low_change",
-		"52_week_low_change_percent",
-		"52_week_high",
-		"52_week_high_change",
-		"52_week_high_change_percent",
-		"shares_outstanding",
-		"eps_ttm",
-		"dividend_yield_ta",
-		"dividend_rate_ta",
-		"last_update"
-	];
+    $formatted_data = [];
+    $fields = [
+        "symbol",
+        "company_name",
+        "type",
+        "exchange",
+        "exchange_name",
+        "price",
+        "currency",
+        "open",
+        "close",
+        "low",
+        "high",
+        "previous_close",
+        "change",
+        "change_percent",
+        "volume",
+        "market_cap",
+        "52_week_low",
+        "52_week_low_change",
+        "52_week_low_change_percent",
+        "52_week_high",
+        "52_week_high_change",
+        "52_week_high_change_percent",
+        "shares_outstanding",
+        "eps_ttm",
+        "dividend_yield_ta",
+        "dividend_rate_ta",
+        "last_update"
+    ];
 
-	foreach ($stock_data as $symbol => $data) {
-		$formatted_item = [];
-		$skip_stock = false;
+    foreach ($stock_data as $symbol => $data) {
+        $formatted_item = [];
+        $skip_stock = false;
 
-		foreach ($fields as $field) {
+        foreach ($fields as $field) {
+            if ($field === "price") {
+                
+                if (!isset($data["quote"][$field]) || $data["quote"][$field] === null || $data["quote"][$field] === 0) {
+                    $skip_stock = true;
+                    break;
+                }
+            } 
 
-			if ($data["quote"][$field] === null) {
-				$skip_stock = true;
-				break;
-			}
+            $formatted_item[$field] = $data["quote"][$field];
+        }
 
-			$formatted_item[$field] = $data["quote"][$field];
-		}
+        if (!$skip_stock) {
+            $formatted_data[] = $formatted_item;
+        }
+    }
 
-		if (!$skip_stock) {
-			$formatted_data[] = $formatted_item;
-		}
-	}
-
-	return $formatted_data;
+    return $formatted_data;
 }
 
 
