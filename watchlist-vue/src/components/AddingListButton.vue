@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button @click="openModal" class="p-3 hover:bg-blue-100 aspect-square">
+    <button @click="openModal" class="p-3 aspect-square">
       <svg
         width="24"
         height="24"

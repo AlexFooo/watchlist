@@ -1,6 +1,6 @@
 <template>
   <Menu as="div" class="relative inline-block text-left">
-    <MenuButton class="p-3 hover:bg-blue-100 aspect-square">
+    <MenuButton class="p-3 aspect-square">
       <svg
         width="24"
         height="24"
@@ -30,7 +30,7 @@
         <div class="">
           <MenuItem v-slot="{ active }" v-for="sortOrder in sortOrders" :key="sortOrder.field">
             <button
-              class="text-base px-4 py-2 block hover:bg-blue-100 w-full text-left"
+              class="text-base px-4 py-2 block w-full text-left"
               :class="{
                 'bg-blue-200': sortField === sortOrder.field
               }"
