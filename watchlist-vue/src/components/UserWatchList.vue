@@ -118,20 +118,26 @@
                         ${{ stock.price }}
                       </div>
                       <div
-                        v-if="stock.change"
                         class="item-change md:w-24 font-sans text-sm font-normal leading-none"
-                        :class="stock.change > 0 ? 'text-[#12A600]' : 'text-[#FF3A3A]'"
+                        :class="
+                          stock.change !== undefined && stock.change > 0
+                            ? 'text-[#12A600]'
+                            : 'text-[#FF3A3A]'
+                        "
                       >
-                        ${{ stock.change.toFixed(2) }}
+                        ${{ stock.change !== undefined ? stock.change.toFixed(2) : '-' }}
                       </div>
                       <div
-                        v-if="stock.change_percent"
                         class="item-change-percent md:w-24 ml-1 font-sans text-sm font-normal leading-none"
                         :class="stock.change > 0 ? 'text-[#12A600]' : 'text-[#FF3A3A]'"
                       >
-                        {{ stock.change_percent.toFixed(2) }}%
+                        {{
+                          stock.change_percent !== undefined
+                            ? stock.change_percent.toFixed(2) + '%'
+                            : '-'
+                        }}
                       </div>
-                      
+
                       <div class="md:flex hidden md:w-24">
                         {{ stock.market_cap ? formatter.format(stock.market_cap) : '-' }}
                       </div>
