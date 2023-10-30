@@ -243,7 +243,7 @@ function letizo_save_stocks_data_by_user_id()
 	$user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : '';
 	$symbols_string = isset($_REQUEST['symbols_string']) ? $_REQUEST['symbols_string'] : '';
 
-	if ($symbols_string) {
+	if (isset($symbols_string)) {
 		$user_symbols_meta = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
 
 		if ($user_symbols_meta) {
