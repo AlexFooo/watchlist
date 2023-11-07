@@ -28,7 +28,7 @@
         leave-from-class="translate-y-0 opacity-100"
         leave-to-class="-translate-y-8 opacity-0"
       >
-        <div v-if="isLoading" class="w-full py-8 flex items-center justify-center">
+        <div v-if="isLoading && userStocks.length === 0" class="w-full py-8 flex items-center justify-center">
           <svg
             aria-hidden="true"
             class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-red-600"
@@ -59,7 +59,7 @@
             leave-to-class=" opacity-0"
           >
             <div
-              v-if="isUpdating"
+              v-if="isUpdating || isLoading"
               class="absolute inset-0 bg-white/10 w-full py-8 flex items-center justify-center"
             >
               <svg
@@ -90,7 +90,7 @@
               <div class="md:w-24 md:flex">CHANGE</div>
               <div class="md:w-24 md:flex">CHANGE %</div>
               <div class="md:w-24 md:flex">MARKET CAP</div>
-              <div class=""></div>
+              <div class="md:w-24"></div>
             </div>
           </div>
           <div v-if="userStocks.length === 0">
@@ -141,7 +141,10 @@
                       <div class="md:flex hidden md:w-24">
                         {{ stock.market_cap ? formatter.format(stock.market_cap) : '-' }}
                       </div>
-                      <div class="trade-referal-link"></div>
+                      <div class="trade-referal-link md:w-24">
+                        <a v-if="startTradingButtonLink" :href="startTradingButtonLink" class="bg-green-600 cursor-pointer hover:bg-green-700 transition-colors px-2 py-1 text-white text-xs uppercase font-bold truncate">Start trading</a>
+
+                      </div>
                     </div>
                   </div>
                 </Transition>
@@ -172,7 +175,7 @@ const userId = window.userId || 2
 
 const userStocksSymbols = ref<string[]>(props.userStocksSymbolsString.split(',') || [])
 const userStocks = ref<Stock[]>([])
-
+const startTradingButtonLink = ref<string>(window.startTradingButtonLink || '')
 const userStocksToShow = computed({
   get() {
     let stocks = userStocks.value
@@ -192,8 +195,10 @@ onMounted(async () => {
 watchDebounced(
   () => userStocksSymbols.value,
   async (newValue) => {
-    userStocks.value = await updateUserStocks(newValue.join(',') || '')
+    // userStocks.value = await updateUserStocks(newValue.join(',') || '')
     await saveUserStocksString(newValue.join(',') || '')
+  userStocks.value = await getUserStocksByUserId()
+
   },
   { debounce: 500, maxWait: 1000 }
 )
@@ -210,7 +215,6 @@ const getUserStocksByUserId = async (): Promise<Stock[]> => {
     const result = await axios
       .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
       .then((data) => data.data?.stocks_data || [])
-    console.log(result)
 
     return result
   } catch (error) {
@@ -227,16 +231,17 @@ const updateUserStocks = async (userStocksSymbolsString?: string): Promise<Stock
     isUpdating.value = true
     const formData = new FormData()
     formData.append('action', 'watchlist_letizo_get_stocks_data')
-    if (userStocksSymbolsString) {
-      formData.append('symbols_string', userStocksSymbolsString)
-    } else {
-      formData.append('user_id', userId)
-    }
+    formData.append('user_id', userId)
+
+    // if (userStocksSymbolsString) {
+    //   formData.append('symbols_string', userStocksSymbolsString)
+    // } else {
+    //   formData.append('user_id', userId)
+    // }
 
     const result = await axios
       .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
       .then((data) => data.data?.stocks_data || [])
-    console.log(result)
 
     return result
   } catch (error) {
@@ -263,7 +268,8 @@ const saveUserStocksString = async (userStocksSymbolsString?: string) => {
     const result = await axios
       .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
       .then((data) => data.data?.stocks_data || [])
-    console.log(result)
+  
+
 
     return result
   } catch (error) {

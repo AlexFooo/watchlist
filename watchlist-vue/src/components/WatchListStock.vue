@@ -7,7 +7,7 @@
 
       <slot name="image" v-if="slots.image" />
       <img
-        v-else
+        v-else-if="false"
         v-lazy="{
           src: `https://letizo.com/wp-content/uploads/massive-stock-widgets/${stock.symbol}.svg`,
           loading: 'your loading image url',
