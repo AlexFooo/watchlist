@@ -127,24 +127,41 @@ function format_stock_data($stock_data)
         "eps_ttm",
         "dividend_yield_ta",
         "dividend_rate_ta",
-        "last_update"
+        "last_update",
+        "logo",
     ];
 
     foreach ($stock_data as $symbol => $data) {
         $formatted_item = [];
         $skip_stock = false;
+       
 
         foreach ($fields as $field) {
             if ($field === "price") {
-                
+
                 if (!isset($data["quote"][$field]) || $data["quote"][$field] === null || $data["quote"][$field] === 0) {
                     $skip_stock = true;
                     break;
                 }
-            } 
+            }
 
-            $formatted_item[$field] = $data["quote"][$field];
+            if ($field === "logo") {
+                
+                if (isset($data["logo_url"]) && !empty($data["logo_url"])) {
+                    $formatted_item[$field] = $data["logo_url"];
+                } else {
+                    
+                    $symbol = $data["quote"]["symbol"];
+                    $formatted_item[$field] = "https://letizo.com/wp-content/uploads/massive-stock-widgets/{$symbol}.svg";
+                    if (empty($symbol)) {
+                        $formatted_item[$field] = "https://letizo.com/wp-content/plugins/massive-stock-widgets/assets/public/img/placeholders/{$symbol[0]}.svg";
+                    }
+                }
+            } else {
+                $formatted_item[$field] = $data["quote"][$field];
+            }
         }
+        
 
         if (!$skip_stock) {
             $formatted_data[] = $formatted_item;
@@ -155,83 +172,63 @@ function format_stock_data($stock_data)
 }
 
 
+
+
+
 function render_stock_assets_json($args)
 {
-	require_once(ABSPATH . 'wp-content/plugins/massive-stock-widgets/includes/api.php');
+    require_once(ABSPATH . 'wp-content/plugins/massive-stock-widgets/includes/api.php');
 
-	$symbols_string = $args["assets"];
-	$symbols = explode(",", $symbols_string);
+    $symbols_string = $args["assets"];
+    $symbols = explode(",", $symbols_string);
 
-	$config = get_api_config();
+    $config = get_api_config();
 
-	$api = new MassiveStockWidgets\API($config);
-	$api->auth_check();
+    $api = new MassiveStockWidgets\API($config);
+    $api->auth_check();
 
-	$stock_data = $api->batch_request($symbols);
+    $stock_data = $api->batch_request($symbols);
 
-	$formatted_data = format_stock_data($stock_data);
+    $formatted_data = format_stock_data($stock_data);
 
-	return json_encode($formatted_data);
+    return json_encode($formatted_data);
 }
 
 
 add_shortcode('stock-data', 'render_stock_assets_json');
 
 
-function letizo_get_stocks_data()
-{
+function letizo_get_stocks_data() {
 
+    $config = get_api_config();
+    $api = new MassiveStockWidgets\API($config);
+    $api->auth_check();
 
-	if (isset($_REQUEST['symbols_string'])) {
-		$symbols_string = $_REQUEST['symbols_string'];
-		$user_id = get_current_user_id();
-		$symbols = explode(",", $symbols_string);
+    if (isset($_REQUEST['symbols_string'])) {
+        $symbols_string = $_REQUEST['symbols_string'];
+    } elseif (isset($_REQUEST['user_id'])) {
+        $user_id = $_REQUEST['user_id'];
+        $symbols_string = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
+    }
 
-		$config = get_api_config();
+    if (!empty($symbols_string)) {
+        
+        $symbols = explode(",", $symbols_string);
+        $stock_data = $api->batch_request($symbols);
+        $formatted_data = [
+            'stocks_data' => format_stock_data($stock_data),
+           
+            
+        ];
+        echo json_encode($formatted_data);
+    } else {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid request']);
+    }
 
-		$api = new MassiveStockWidgets\API($config);
-		$api->auth_check();
-
-		$stock_data = $api->batch_request($symbols);
-
-		$formatted_data = [
-			'current_user_id' => $user_id,
-			'stocks_data' => format_stock_data($stock_data)
-		];
-
-
-		echo  json_encode($formatted_data);
-	} elseif (isset($_REQUEST['user_id'])) {
-		$user_id = $_REQUEST['user_id'];
-		$symbols_string = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
-
-		if ($symbols_string) {
-			$config = get_api_config();
-
-			$api = new MassiveStockWidgets\API($config);
-			$api->auth_check();
-
-			$symbols = explode(",", $symbols_string);
-
-			$stock_data = $api->batch_request($symbols);
-
-			$formatted_data = format_stock_data($stock_data);
-
-			$response_data = [
-				'symbols_string' => $symbols_string,
-				'stocks_data' => $formatted_data
-			];
-
-			echo  json_encode($response_data);
-		} else {
-			echo  "lol";
-		}
-	}
-
-
-
-	die();
+    die();
 }
+
 
 
 add_action('wp_ajax_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
