@@ -198,7 +198,7 @@ function letizo_get_stocks_data()
 		];
 
 
-		echo json_encode($formatted_data);
+		return  json_encode($formatted_data);
 	}
 
 	if (isset($_REQUEST['user_id'])) {
@@ -222,9 +222,9 @@ function letizo_get_stocks_data()
 				'stocks_data' => $formatted_data
 			];
 
-			echo json_encode($response_data);
+			return  json_encode($response_data);
 		} else {
-			echo "lol";
+			return  "lol";
 		}
 	}
 
@@ -240,24 +240,27 @@ add_action('wp_ajax_nopriv_watchlist_letizo_get_stocks_data', 'letizo_get_stocks
 
 function letizo_save_stocks_data_by_user_id()
 {
-	$user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : '';
-	$symbols_string = isset($_REQUEST['symbols_string']) ? $_REQUEST['symbols_string'] : '';
+    $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : '';
+    $symbols_string = isset($_REQUEST['symbols_string']) ? $_REQUEST['symbols_string'] : '';
 
-	if (isset($symbols_string)) {
-		$user_symbols_meta = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
+    if (isset($symbols_string)) {
+        $user_symbols_meta = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
 
-		if ($user_symbols_meta) {
-			update_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string);
-		} else {
-			add_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string, true);
-		}
+        if ($user_symbols_meta) {
+            update_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string);
+        } else {
+            add_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string, true);
+        }
 
-		echo json_encode(['success' => true]);
-	} else {
-		echo json_encode(['success' => false, 'error' => 'symbols_string is missing']);
-	}
+        
+        $result = letizo_get_stocks_data();
 
-	die();
+        
+        echo $result;
+    } else {
+        echo json_encode(['success' => false, 'error' => 'symbols_string is missing']);
+    }
+    die();
 }
 
 add_action('wp_ajax_watchlist_letizo_save_stocks_data_by_user_id', 'letizo_save_stocks_data_by_user_id');
