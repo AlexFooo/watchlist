@@ -180,6 +180,8 @@ add_shortcode('stock-data', 'render_stock_assets_json');
 
 function letizo_get_stocks_data()
 {
+
+
 	if (isset($_REQUEST['symbols_string'])) {
 		$symbols_string = $_REQUEST['symbols_string'];
 		$user_id = get_current_user_id();
@@ -199,9 +201,7 @@ function letizo_get_stocks_data()
 
 
 		echo  json_encode($formatted_data);
-	}
-
-	if (isset($_REQUEST['user_id'])) {
+	} elseif (isset($_REQUEST['user_id'])) {
 		$user_id = $_REQUEST['user_id'];
 		$symbols_string = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
 
@@ -252,10 +252,10 @@ function letizo_save_stocks_data_by_user_id()
             add_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string, true);
         }
 
-        // Вызываем функцию letizo_get_stocks_data() и сохраняем результат в переменной $result
+
         $result = letizo_get_stocks_data();
 
-        // Печатаем результат
+
         echo $result;
     } else {
         echo json_encode(['success' => false, 'error' => 'symbols_string is missing']);
