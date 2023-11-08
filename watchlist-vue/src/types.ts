@@ -26,6 +26,7 @@ export interface Stock {
   dividend_yield_ta: number
   dividend_rate_ta: number
   last_update: number
+  logo: string
 }
 
 export interface SearchStock {
