@@ -195,10 +195,7 @@ onMounted(async () => {
 watchDebounced(
   () => userStocksSymbols.value,
   async (newValue) => {
-    // userStocks.value = await updateUserStocks(newValue.join(',') || '')
-    await saveUserStocksString(newValue.join(',') || '')
-  userStocks.value = await getUserStocksByUserId()
-
+    userStocks.value =  await saveUserStocksString(newValue.join(',') || '')
   },
   { debounce: 500, maxWait: 1000 }
 )
