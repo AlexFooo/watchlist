@@ -141,9 +141,8 @@
                       <div class="md:flex hidden md:w-24">
                         {{ stock.market_cap ? formatter.format(stock.market_cap) : '-' }}
                       </div>
-                      <div class="trade-referal-link md:w-24">
+                      <div class="trade-referal-link md:w-28">
                         <a v-if="startTradingButtonLink" :href="startTradingButtonLink" class="bg-green-600 cursor-pointer hover:bg-green-700 transition-colors px-2 py-1 text-white text-xs uppercase font-bold truncate">Start trading</a>
-
                       </div>
                     </div>
                   </div>
