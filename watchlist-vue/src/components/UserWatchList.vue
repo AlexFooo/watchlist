@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto">
+  <div v-if="userId" class="mx-auto">
     <div class="watchlist-list">
       <div class="flex items-center flex-wrap flex-col md:flex-row-reverse">
         <div class="flex gap-2 md:justify-end w-full md:w-fit flex-1 bg-slate-50 md:bg-transparent">
@@ -154,6 +154,7 @@
       </Transition>
     </div>
   </div>
+  <div v-else class="mx-auto p-8 font-bold text-center w-full">Please authorize to use watchlist.</div>
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
@@ -165,14 +166,14 @@ import SortingListButton from './SortingListButton.vue'
 import AddingListButton from './AddingListButton.vue'
 import EditingListButton from './EditingListButton.vue'
 
-export interface Props {
-  userStocksSymbolsString: string
-}
-const props = defineProps<Props>()
+// export interface Props {
+//   userStocksSymbolsString: string
+// }
+// const props = defineProps<Props>()
 
-const userId = window.userId || 2
+const userId = window.userId || null
 
-const userStocksSymbols = ref<string[]>(props.userStocksSymbolsString.split(',') || [])
+const userStocksSymbols = ref<string[]>( [])
 const userStocks = ref<Stock[]>([])
 const startTradingButtonLink = ref<string>(window.startTradingButtonLink || '')
 const userStocksToShow = computed({
