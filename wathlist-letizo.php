@@ -203,6 +203,7 @@ function letizo_get_stocks_data() {
     $config = get_api_config();
     $api = new MassiveStockWidgets\API($config);
     $api->auth_check();
+    $symbols_string = null;
 
     if (isset($_REQUEST['symbols_string'])) {
         $symbols_string = $_REQUEST['symbols_string'];
@@ -222,8 +223,8 @@ function letizo_get_stocks_data() {
         ];
         echo json_encode($formatted_data);
     } else {
-        http_response_code(400);
-        echo json_encode(['error' => 'Invalid request']);
+        http_response_code(200);
+        echo json_encode([$symbols_string]);
     }
 
     die();
