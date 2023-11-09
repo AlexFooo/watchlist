@@ -27,7 +27,7 @@
 
 // If this file is called directly, abort.
 if (!defined('WPINC')) {
-	die;
+    die;
 }
 
 /**
@@ -43,8 +43,8 @@ define('PLUGIN_NAME_VERSION', '1.0.0');
  */
 function activate_plugin_name()
 {
-	require_once plugin_dir_path(__FILE__) . 'includes/class-plugin-name-activator.php';
-	Plugin_Name_Activator::activate();
+    require_once plugin_dir_path(__FILE__) . 'includes/class-plugin-name-activator.php';
+    Plugin_Name_Activator::activate();
 }
 
 /**
@@ -53,8 +53,8 @@ function activate_plugin_name()
  */
 function deactivate_plugin_name()
 {
-	require_once plugin_dir_path(__FILE__) . 'includes/class-plugin-name-deactivator.php';
-	Plugin_Name_Deactivator::deactivate();
+    require_once plugin_dir_path(__FILE__) . 'includes/class-plugin-name-deactivator.php';
+    Plugin_Name_Deactivator::deactivate();
 }
 
 register_activation_hook(__FILE__, 'activate_plugin_name');
@@ -78,8 +78,8 @@ require plugin_dir_path(__FILE__) . 'includes/class-plugin-name.php';
 function run_plugin_name()
 {
 
-	$plugin = new Plugin_Name();
-	$plugin->run();
+    $plugin = new Plugin_Name();
+    $plugin->run();
 }
 run_plugin_name();
 
@@ -87,13 +87,13 @@ run_plugin_name();
 
 function get_api_config()
 {
-	return array(
-		'auth' => array(
-			'crumb' => 'Fpzh2QPx82b',
-			'cookie' => 'd=AQABBLBbhGQCEGiyQXDnrRd9f4RJL1-0Hw8FEgEBAQGthWSOZFkeyyMA_eMAAA&S=AQAAAvNs5-0hNumW6l1ASUuHtQE',
-		),
-		'assets' => array()
-	);
+    return array(
+        'auth' => array(
+            'crumb' => 'Fpzh2QPx82b',
+            'cookie' => 'd=AQABBLBbhGQCEGiyQXDnrRd9f4RJL1-0Hw8FEgEBAQGthWSOZFkeyyMA_eMAAA&S=AQAAAvNs5-0hNumW6l1ASUuHtQE',
+        ),
+        'assets' => array()
+    );
 }
 
 
@@ -134,7 +134,7 @@ function format_stock_data($stock_data)
     foreach ($stock_data as $symbol => $data) {
         $formatted_item = [];
         $skip_stock = false;
-       
+
 
         foreach ($fields as $field) {
             if ($field === "price") {
@@ -146,11 +146,11 @@ function format_stock_data($stock_data)
             }
 
             if ($field === "logo") {
-                
+
                 if (isset($data["logo_url"]) && !empty($data["logo_url"])) {
                     $formatted_item[$field] = $data["logo_url"];
                 } else {
-                    
+
                     $symbol = $data["quote"]["symbol"];
                     $formatted_item[$field] = "https://letizo.com/wp-content/uploads/massive-stock-widgets/{$symbol}.svg";
                     if (empty($symbol)) {
@@ -161,7 +161,7 @@ function format_stock_data($stock_data)
                 $formatted_item[$field] = $data["quote"][$field];
             }
         }
-        
+
 
         if (!$skip_stock) {
             $formatted_data[] = $formatted_item;
@@ -198,12 +198,13 @@ function render_stock_assets_json($args)
 add_shortcode('stock-data', 'render_stock_assets_json');
 
 
-function letizo_get_stocks_data() {
+function letizo_get_stocks_data()
+{
 
     $config = get_api_config();
     $api = new MassiveStockWidgets\API($config);
     $api->auth_check();
-    $symbols_string = null;
+    $symbols_string = '';
 
     if (isset($_REQUEST['symbols_string'])) {
         $symbols_string = $_REQUEST['symbols_string'];
@@ -212,20 +213,15 @@ function letizo_get_stocks_data() {
         $symbols_string = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
     }
 
-    if (!empty($symbols_string)) {
-        
-        $symbols = explode(",", $symbols_string);
-        $stock_data = $api->batch_request($symbols);
-        $formatted_data = [
-            'stocks_data' => format_stock_data($stock_data),
-           
-            
-        ];
-        echo json_encode($formatted_data);
-    } else {
-        http_response_code(200);
-        echo json_encode([$symbols_string]);
-    }
+
+
+    $symbols = explode(",", $symbols_string);
+    $stock_data = $api->batch_request($symbols);
+    $formatted_data = [
+        'stocks_data' => format_stock_data($stock_data),
+    ];
+    echo json_encode($formatted_data);
+
 
     die();
 }
@@ -269,15 +265,15 @@ add_action('wp_ajax_nopriv_watchlist_letizo_save_stocks_data_by_user_id', 'letiz
 function render_letizo_watchlist_shortcode($atts, $content = null)
 {
 
-	$element_id =  'app';
+    $element_id =  'app';
 
-	$script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
-	$css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
-	$html_tag = '<div id="' . $element_id . '"></div> ';
-	$script_tag = '<script type="module" src="' . $script_src . '"></script> ';
-	$css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
+    $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
+    $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
+    $html_tag = '<div id="' . $element_id . '"></div> ';
+    $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
+    $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
 
 
-	return $html_tag . $script_tag . $css_tag;
+    return $html_tag . $script_tag . $css_tag;
 }
 add_shortcode('letizo-watchlist', 'render_letizo_watchlist_shortcode');
