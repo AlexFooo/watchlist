@@ -85,7 +85,7 @@
             class="px-4 py-3 border-y md:flex hidden gap-2 md:gap-20 md:items-center font-sans text-xs font-normal leading-none text-[#5E5E5E]"
           >
             <div class="md:flex w-60">COMPANY</div>
-            <div class="md:flex md:gap-10 md:justify-between w-full md:pr-20">
+            <div class="md:flex md:gap-10 md:justify-between w-full md:pr-4">
               <div class="md:flex md:w-20">LAST</div>
               <div class="md:w-24 md:flex">CHANGE</div>
               <div class="md:w-24 md:flex">CHANGE %</div>

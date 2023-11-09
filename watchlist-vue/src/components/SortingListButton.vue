@@ -1,6 +1,6 @@
 <template>
   <Menu as="div" class="relative inline-block text-left">
-    <MenuButton class="p-3 aspect-square">
+    <MenuButton class="p-3 aspect-square hover:bg-black/10 rounded-full transition-colors">
       <svg
         width="24"
         height="24"
