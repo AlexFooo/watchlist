@@ -562,7 +562,7 @@ watchDebounced(
     if (newValue === '') {
       searchList.value = defaultSearchList
     } else {
-      const searchQuery = addUSDIfCryptocurrencyRelated(newValue)
+      const searchQuery = newValue
       searchList.value = await getSearchResult(searchQuery)
     }
   },

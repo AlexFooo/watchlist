@@ -9,7 +9,7 @@
       <img
         v-else-if="stock.logo"
         v-lazy="{
-          src: `https://letizo.com/wp-content/uploads/massive-stock-widgets/${stock.symbol}.svg`,
+          src: stock.logo,
           loading: 'your loading image url',
           error: `https://letizo.com/wp-content/plugins/massive-stock-widgets/assets/public/img/placeholders/${stock.symbol.charAt(
             0
