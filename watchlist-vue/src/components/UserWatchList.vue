@@ -3,7 +3,7 @@
     <div class="watchlist-list">
       <div class="flex items-center flex-wrap flex-col md:flex-row-reverse">
         <div class="flex gap-2 md:justify-end w-full md:w-fit flex-1 bg-slate-50 md:bg-transparent">
-          <AddingListButton v-model:user-stocks-symbols="userStocksSymbols" />
+          <AddingListButton v-if="userStocksSymbols" v-model:user-stocks-symbols="userStocksSymbols" />
           <SortingListButton @update-sort-field="updateSortField" :sort-field="sortField" />
           <EditingListButton :user-stocks="userStocks" @update-user-stocks="setUserStocks" />
         </div>
@@ -28,7 +28,10 @@
         leave-from-class="translate-y-0 opacity-100"
         leave-to-class="-translate-y-8 opacity-0"
       >
-        <div v-if="isLoading && userStocks.length === 0" class="w-full py-8 flex items-center justify-center">
+        <div
+          v-if="isLoading && userStocks.length === 0"
+          class="w-full py-8 flex items-center justify-center"
+        >
           <svg
             aria-hidden="true"
             class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-red-600"
@@ -142,7 +145,12 @@
                         {{ stock.market_cap ? formatter.format(stock.market_cap) : '-' }}
                       </div>
                       <div class="trade-referal-link md:w-28">
-                        <a v-if="startTradingButtonLink" :href="startTradingButtonLink" class="bg-green-600 cursor-pointer hover:bg-green-700 transition-colors px-2 py-1 text-white text-xs uppercase font-bold truncate">Start trading</a>
+                        <a
+                          v-if="startTradingButtonLink"
+                          :href="startTradingButtonLink"
+                          class="bg-green-600 cursor-pointer hover:bg-green-700 transition-colors px-2 py-1 text-white text-xs uppercase font-bold truncate"
+                          >Start trading</a
+                        >
                       </div>
                     </div>
                   </div>
@@ -154,7 +162,9 @@
       </Transition>
     </div>
   </div>
-  <div v-else class="mx-auto p-8 font-bold text-center w-full">Please authorize to use watchlist.</div>
+  <div v-else class="mx-auto p-8 font-bold text-center w-full">
+    Please authorize to use watchlist.
+  </div>
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
@@ -166,10 +176,9 @@ import SortingListButton from './SortingListButton.vue'
 import AddingListButton from './AddingListButton.vue'
 import EditingListButton from './EditingListButton.vue'
 
-
 const userId = window.userId || 3
 
-const userStocksSymbols = ref<string[]>([])
+const userStocksSymbols = ref<string[] | null>(null)
 const userStocks = ref<Stock[]>([])
 const startTradingButtonLink = ref<string>(window.startTradingButtonLink || '')
 const userStocksToShow = computed({
@@ -185,11 +194,11 @@ const userStocksToShow = computed({
   }
 })
 
-
 watchDebounced(
   () => userStocksSymbols.value,
-  async (newValue) => {
-   saveUserStocksString(newValue.join(',') || '')
+  async (newValue, oldValue) => {
+    if(oldValue === null || !newValue) return
+    saveUserStocksString(newValue.join(',') || '')
   },
   { debounce: 500, maxWait: 1000 }
 )
@@ -208,7 +217,7 @@ const getUserStocksByUserId = async (): Promise<Stock[]> => {
       .then((data) => data.data?.stocks_data || [])
 
     userStocks.value = stocks
-  userStocksSymbols.value = userStocks.value.map((s) => s.symbol)
+    userStocksSymbols.value = userStocks.value.map((s) => s.symbol)
 
     return stocks
   } catch (error) {
@@ -219,7 +228,6 @@ const getUserStocksByUserId = async (): Promise<Stock[]> => {
   }
 }
 getUserStocksByUserId()
-
 
 const sortField = useStorage('d12edf32esvbwe', 'custom')
 
@@ -238,7 +246,7 @@ const saveUserStocksString = async (userStocksSymbolsString?: string) => {
       .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
       .then((data) => data.data?.stocks_data || [])
 
-      userStocks.value = stocks
+    userStocks.value = stocks
 
     return stocks
   } catch (error) {
