@@ -24,7 +24,7 @@
         >
           {{ stock.symbol }}
         </p>
-        <p class="stock-name truncate font-sans text-sm font-light text-[#555] leading-none">
+        <p class="stock-name truncate max-w-[120px] font-sans text-sm font-light text-[#555] leading-none">
           {{ stock.company_name || stock.name }}
         </p>
       </div>

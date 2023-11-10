@@ -99,6 +99,10 @@ function get_api_config()
 
 function format_stock_data($stock_data)
 {
+    require_once(ABSPATH . 'wp-content/plugins/massive-stock-widgets/includes/shortcodes.php');
+
+    $shortcodes = new \MassiveStockWidgets\Shortcodes($config);
+
     $formatted_data = [];
     $fields = [
         "symbol",
@@ -135,7 +139,6 @@ function format_stock_data($stock_data)
         $formatted_item = [];
         $skip_stock = false;
 
-
         foreach ($fields as $field) {
             if ($field === "price") {
 
@@ -146,22 +149,11 @@ function format_stock_data($stock_data)
             }
 
             if ($field === "logo") {
-
-                if (isset($data["logo_url"]) && !empty($data["logo_url"])) {
-                    $formatted_item[$field] = $data["logo_url"];
-                } else {
-
-                    $symbol = $data["quote"]["symbol"];
-                    $formatted_item[$field] = "https://letizo.com/wp-content/uploads/massive-stock-widgets/{$symbol}.svg";
-                    if (empty($symbol)) {
-                        $formatted_item[$field] = "https://letizo.com/wp-content/plugins/massive-stock-widgets/assets/public/img/placeholders/{$symbol[0]}.svg";
-                    }
-                }
+                $formatted_item[$field] = $shortcodes->get_logo($data);
             } else {
                 $formatted_item[$field] = $data["quote"][$field];
             }
         }
-
 
         if (!$skip_stock) {
             $formatted_data[] = $formatted_item;
