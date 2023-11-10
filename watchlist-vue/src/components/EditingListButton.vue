@@ -92,7 +92,7 @@
                     </div>
                   </template>
                   <template #item="{ element: stock }">
-                    <WatchListStock :stock="stock" class="cursor-grab">
+                    <WatchListStock :stock="stock" class="">
                       <template #left>
                         <Transition
                           mode="out-in"
@@ -134,7 +134,7 @@
                           leave-from-class="translate-y-0 opacity-100"
                           leave-to-class="-translate-y-8 opacity-0"
                         >
-                          <div class="watchlist-item-right flex flex-wrap justify-end">
+                          <div class="watchlist-item-right flex flex-wrap justify-end cursor-grab">
                             <div class="handle p-2 -ml-2 hover:bg-slate-50 rounded-full">
                               <svg
                                 width="24"
