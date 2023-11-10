@@ -35,4 +35,5 @@ export interface SearchStock {
   name: string
   symbol: string
   type: string
+  logo?: string
 }
