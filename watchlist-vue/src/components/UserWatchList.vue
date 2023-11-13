@@ -176,7 +176,7 @@ import SortingListButton from './SortingListButton.vue'
 import AddingListButton from './AddingListButton.vue'
 import EditingListButton from './EditingListButton.vue'
 
-const userId = window.userId || 3
+const userId = window.userId || null
 
 const userStocksSymbols = ref<string[] | null>(null)
 const userStocks = ref<Stock[]>([])
