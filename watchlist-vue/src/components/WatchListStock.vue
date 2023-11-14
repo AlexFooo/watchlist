@@ -1,6 +1,6 @@
 <template>
   <div
-    class="watchlist-item flex justify-between w-full px-4 py-3 border-b-2 overflow-hidden gap-5 md:gap-20 md:items-center"
+    class="watchlist-item flex justify-between w-full py-3 border-b-2 overflow-hidden gap-5 md:gap-20 md:items-center"
   >
     <div class="watchlist-item-left flex gap-2 md:items-center md:w-60">
       <slot name="left" />
@@ -24,7 +24,9 @@
         >
           {{ stock.symbol }}
         </p>
-        <p class="stock-name truncate max-w-[120px] font-sans text-sm font-light text-[#555] leading-none">
+        <p
+          class="stock-name truncate max-w-[120px] font-sans text-sm font-light text-[#555] leading-none"
+        >
           {{ stock.company_name || stock.name }}
         </p>
       </div>
