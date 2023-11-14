@@ -1,9 +1,12 @@
 <template>
-  <div v-if="userId" class="mx-auto">
+  <div class="mx-auto">
     <div class="watchlist-list">
       <div class="flex items-center flex-wrap flex-col md:flex-row-reverse">
         <div class="flex gap-2 md:justify-end w-full md:w-fit flex-1 bg-slate-50 md:bg-transparent">
-          <AddingListButton v-if="userStocksSymbols" v-model:user-stocks-symbols="userStocksSymbols" />
+          <AddingListButton
+            v-if="userStocksSymbols"
+            v-model:user-stocks-symbols="userStocksSymbols"
+          />
           <SortingListButton @update-sort-field="updateSortField" :sort-field="sortField" />
           <EditingListButton :user-stocks="userStocks" @update-user-stocks="setUserStocks" />
         </div>
@@ -162,9 +165,7 @@
       </Transition>
     </div>
   </div>
-  <div v-else class="mx-auto p-8 font-bold text-center w-full">
-    Please authorize to use watchlist.
-  </div>
+
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
@@ -197,20 +198,23 @@ const userStocksToShow = computed({
 watchDebounced(
   () => userStocksSymbols.value,
   async (newValue, oldValue) => {
-    if(oldValue === null || !newValue) return
+    if (oldValue === null || !newValue) return
     saveUserStocksString(newValue.join(',') || '')
   },
   { debounce: 500, maxWait: 1000 }
 )
 
 const isLoading = ref(true)
-const getUserStocksByUserId = async (): Promise<Stock[]> => {
+const getUserStocks = async (): Promise<Stock[]> => {
   try {
     isLoading.value = true
     const formData = new FormData()
     formData.append('action', 'watchlist_letizo_get_stocks_data')
-    // formData.append('symbols_string', userStocksSymbolsString)
-    formData.append('user_id', userId)
+    if (userId) {
+      formData.append('user_id', userId)
+    } else {
+      formData.append('symbols_string', localStorage.getItem('userStocksSymbols') || '')
+    }
 
     const stocks = await axios
       .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
@@ -227,28 +231,37 @@ const getUserStocksByUserId = async (): Promise<Stock[]> => {
     isLoading.value = false
   }
 }
-getUserStocksByUserId()
+getUserStocks()
 
 const sortField = useStorage('d12edf32esvbwe', 'custom')
 
 const isSaving = ref(false)
 const saveUserStocksString = async (userStocksSymbolsString?: string) => {
   try {
-    isSaving.value = true
-    const formData = new FormData()
-    formData.append('action', 'watchlist_letizo_save_stocks_data_by_user_id')
-    formData.append(
-      'symbols_string',
-      userStocksSymbolsString || userStocksSymbols.value.join(',') || ''
-    )
-    formData.append('user_id', userId)
-    const stocks = await axios
-      .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
-      .then((data) => data.data?.stocks_data || [])
+    if (userId) {
+      isSaving.value = true
+      const formData = new FormData()
+      formData.append('action', 'watchlist_letizo_save_stocks_data_by_user_id')
+      formData.append(
+        'symbols_string',
+        userStocksSymbolsString || userStocksSymbols.value.join(',') || ''
+      )
+      formData.append('user_id', userId)
+      const stocks = await axios
+        .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
+        .then((data) => data.data?.stocks_data || [])
 
-    userStocks.value = stocks
+      userStocks.value = stocks
+      return stocks
 
-    return stocks
+    } else {
+      localStorage.setItem(
+        'userStocksSymbols',
+        userStocksSymbolsString || userStocksSymbols.value?.join(',') || ''
+      )
+      getUserStocks()
+    }
+
   } catch (error) {
     console.log(error)
     return []
