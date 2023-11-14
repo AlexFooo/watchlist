@@ -223,6 +223,17 @@ function letizo_get_stocks_data()
 add_action('wp_ajax_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
 add_action('wp_ajax_nopriv_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
 
+function set_default_watchlist_symbols($user_id)
+{
+    
+    $user_symbols_meta = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
+    if (empty($user_symbols_meta)) {
+        
+        update_user_meta($user_id, 'letizo_user_watchlist_symbols_string', 'AAPL,TSLA,BTC-USD,EUR=X');
+    }
+}
+
+add_action('user_register', 'set_default_watchlist_symbols', 10, 1);
 
 function letizo_save_stocks_data_by_user_id()
 {
