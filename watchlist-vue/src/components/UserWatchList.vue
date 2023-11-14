@@ -10,7 +10,7 @@
           <SortingListButton @update-sort-field="updateSortField" :sort-field="sortField" />
           <EditingListButton :user-stocks="userStocks" @update-user-stocks="setUserStocks" />
         </div>
-        <div class="flex gap-2 py-3 px-4 w-full md:w-fit">
+        <div class="flex gap-2 py-3 w-full md:w-fit">
           <button
             :class="stockType === selectedStocksType ? 'bg-red-600 text-white' : 'text-slate-500'"
             class="px-5 py-2 text-xs border font-bold transition-all"
@@ -165,7 +165,6 @@
       </Transition>
     </div>
   </div>
-
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
@@ -221,7 +220,6 @@ const getUserStocks = async (): Promise<Stock[]> => {
       .then((data) => data.data?.stocks_data || [])
 
     userStocks.value = stocks
-    userStocksSymbols.value = userStocks.value.map((s) => s.symbol)
 
     return stocks
   } catch (error) {
@@ -231,7 +229,11 @@ const getUserStocks = async (): Promise<Stock[]> => {
     isLoading.value = false
   }
 }
-getUserStocks()
+
+onMounted(async () => {
+  await getUserStocks()
+  userStocksSymbols.value = userStocks.value.map((s) => s.symbol)
+})
 
 const sortField = useStorage('d12edf32esvbwe', 'custom')
 
@@ -253,7 +255,6 @@ const saveUserStocksString = async (userStocksSymbolsString?: string) => {
 
       userStocks.value = stocks
       return stocks
-
     } else {
       localStorage.setItem(
         'userStocksSymbols',
@@ -261,7 +262,6 @@ const saveUserStocksString = async (userStocksSymbolsString?: string) => {
       )
       getUserStocks()
     }
-
   } catch (error) {
     console.log(error)
     return []
