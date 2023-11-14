@@ -180,7 +180,9 @@ const userId = window.userId || null
 
 const userStocksSymbols = ref<string[] | null>(null)
 const userStocks = ref<Stock[]>([])
-const startTradingButtonLink = ref<string>(window.startTradingButtonLink || '')
+const startTradingButtonLink = computed<string | null>(()=> window.startTradingButtonLink || null)
+
+
 const userStocksToShow = computed({
   get() {
     let stocks = userStocks.value

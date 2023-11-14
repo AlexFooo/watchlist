@@ -1,6 +1,6 @@
 <template>
   <div
-    class="watchlist-item flex justify-between w-full py-3 border-b-2 overflow-hidden gap-5 md:gap-20 md:items-center"
+    class="watchlist-item flex justify-between w-full py-3 px-4 border-b-2 overflow-hidden gap-5 md:gap-20 md:items-center"
   >
     <div class="watchlist-item-left flex gap-2 md:items-center md:w-60">
       <slot name="left" />
