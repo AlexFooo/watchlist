@@ -223,45 +223,31 @@ function letizo_get_stocks_data()
 add_action('wp_ajax_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
 add_action('wp_ajax_nopriv_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
 
-function set_default_watchlist_symbols($user_id)
-{
-    
-    $user_symbols_meta = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
-    if (empty($user_symbols_meta)) {
-        
-        update_user_meta($user_id, 'letizo_user_watchlist_symbols_string', 'AAPL,TSLA,BTC-USD,EUR=X');
-    }
-}
-
-add_action('user_register', 'set_default_watchlist_symbols', 10, 1);
 
 function letizo_save_stocks_data_by_user_id()
 {
-    $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : '';
-    $symbols_string = isset($_REQUEST['symbols_string']) ? $_REQUEST['symbols_string'] : '';
-
-    if (isset($symbols_string)) {
-        $user_symbols_meta = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
-
-        if ($user_symbols_meta) {
-            update_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string);
-        } else {
-            add_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string, true);
-        }
+    $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null;
+    $symbols_string = isset($_REQUEST['symbols_string']) ? $_REQUEST['symbols_string'] : null;
 
 
+    if (isset($symbols_string) && isset($user_id)) {
+        
+        update_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string);
         $result = letizo_get_stocks_data();
-
-
         echo $result;
+
     } else {
         echo json_encode(['success' => false, 'error' => 'symbols_string is missing']);
     }
+
     die();
 }
 
 add_action('wp_ajax_watchlist_letizo_save_stocks_data_by_user_id', 'letizo_save_stocks_data_by_user_id');
 add_action('wp_ajax_nopriv_watchlist_letizo_save_stocks_data_by_user_id', 'letizo_save_stocks_data_by_user_id');
+
+
+
 
 
 
