@@ -151,7 +151,7 @@
                         <a
                           v-if="startTradingButtonLink"
                           :href="startTradingButtonLink"
-                          class="bg-green-600 cursor-pointer hover:bg-green-700 transition-colors px-2 py-1 text-white text-xs uppercase font-bold truncate"
+                          class="bg-green-600 cursor-pointer hover:bg-green-700 transition-colors px-2 py-1 text-white text-xs uppercase font-bold truncate" target="_blank"
                           >Start trading</a
                         >
                       </div>
