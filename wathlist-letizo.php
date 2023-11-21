@@ -231,17 +231,16 @@ function get_default_stocks_data()
 {
     $symbols_string = "AAPL,TSLA,NVDA,BTC-USD";
 
-    $config = get_api_config();
-    $api = new MassiveStockWidgets\API($config);
-    $api->auth_check();
     
-    $symbols = explode(",", $symbols_string);
-    $stock_data = $api->batch_request($symbols);
-    $formatted_data = [
-        'stocks_data' => format_stock_data($stock_data),
-    ];
+    $symbols_string = "AAPL,TSLA,NVDA,BTC-USD";
 
-    echo json_encode($formatted_data);
+   
+    $_REQUEST['symbols_string'] = $symbols_string;
+
+    ob_start(); 
+    letizo_get_stocks_data();
+    $result = ob_get_clean();
+    echo $result;
 }
 
 add_action('wp_ajax_watchlist_get_default_stocks_data', 'get_default_stocks_data');
