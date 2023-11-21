@@ -203,6 +203,10 @@ function letizo_get_stocks_data()
     } elseif (isset($_REQUEST['user_id'])) {
         $user_id = $_REQUEST['user_id'];
         $symbols_string = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
+
+        if ($symbols_string === null || !metadata_exists('user', $user_id, 'letizo_user_watchlist_symbols_string')) {
+            $symbols_string = "AAPL,TSLA,NVDA,BTC-USD";
+        }
     }
 
 
@@ -222,6 +226,26 @@ function letizo_get_stocks_data()
 
 add_action('wp_ajax_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
 add_action('wp_ajax_nopriv_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
+
+function get_default_stocks_list()
+{
+    $symbols_string = "AAPL,TSLA,NVDA,BTC-USD";
+
+    $config = get_api_config();
+    $api = new MassiveStockWidgets\API($config);
+    $api->auth_check();
+    
+    $symbols = explode(",", $symbols_string);
+    $stock_data = $api->batch_request($symbols);
+    $formatted_data = [
+        'stocks_data' => format_stock_data($stock_data),
+    ];
+
+    echo json_encode($formatted_data);
+}
+
+add_action('wp_ajax_watchlist_get_default_stocks_list', 'get_default_stocks_list');
+add_action('wp_ajax_nopriv_watchlist_get_default_stocks_list', 'get_default_stocks_list');
 
 
 function letizo_save_stocks_data_by_user_id()
