@@ -151,7 +151,8 @@
                         <a
                           v-if="startTradingButtonLink"
                           :href="startTradingButtonLink"
-                          class="bg-green-600 cursor-pointer hover:bg-green-700 transition-colors px-2 py-1 text-white text-xs uppercase font-bold truncate" target="_blank"
+                          class="bg-green-600 cursor-pointer hover:bg-green-700 transition-colors px-2 py-1 text-white text-xs uppercase font-bold truncate"
+                          target="_blank"
                           >Start trading</a
                         >
                       </div>
@@ -180,8 +181,7 @@ const userId = window.userId || null
 
 const userStocksSymbols = ref<string[] | null>(null)
 const userStocks = ref<Stock[]>([])
-const startTradingButtonLink = computed<string | null>(()=> window.startTradingButtonLink || null)
-
+const startTradingButtonLink = computed<string | null>(() => window.startTradingButtonLink || null)
 
 const userStocksToShow = computed({
   get() {
@@ -233,7 +233,11 @@ const getUserStocks = async (): Promise<Stock[]> => {
 }
 
 onMounted(async () => {
-  await getUserStocks()
+  if (!userId && localStorage.getItem('userStocksSymbols') === null) {
+    await getDefaultStocks()
+  } else {
+    await getUserStocks()
+  }
   userStocksSymbols.value = userStocks.value.map((s) => s.symbol)
 })
 
@@ -305,5 +309,26 @@ function sortByField<T>(arr: T[], fieldName: string): T[] {
 const setUserStocks = (value: Stock[]) => {
   userStocks.value = value
   userStocksSymbols.value = userStocks.value.map((s) => s.symbol)
+}
+
+const getDefaultStocks = async (): Promise<Stock[]> => {
+  try {
+    isLoading.value = true
+    const formData = new FormData()
+    formData.append('action', 'watchlist_get_default_stocks_data')
+
+    const stocks = await axios
+      .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
+      .then((data) => data.data?.stocks_data || [])
+
+    userStocks.value = stocks
+
+    return stocks
+  } catch (error) {
+    console.log(error)
+    return []
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>

@@ -1,6 +1,9 @@
 <template>
   <div>
-    <button @click="openModal" class="p-3 aspect-square hover:bg-black/10 rounded-full transition-colors">
+    <button
+      @click="openModal"
+      class="p-3 aspect-square hover:bg-black/10 rounded-full transition-colors"
+    >
       <svg
         width="24"
         height="24"
@@ -63,7 +66,8 @@
                     </svg>
                   </button>
                 </DialogTitle>
-                <div class="bg-blue-50 flex gap-2 shadow-sm border-b border-slate-200">
+
+                <div class="bg-blue-50 flex gap-2 shadow-sm border-slate-200">
                   <input
                     ref="searchInput"
                     type="text"
@@ -72,7 +76,20 @@
                     placeholder="Search"
                   />
                 </div>
-
+                <div class="flex gap-2 flex-wrap px-2 py-2 items-center border-b border-slate-50">
+                  <!-- <div class="text-slate-500 text-sm w-full">Search for</div> -->
+                  <button
+                    v-for="searchType in searchTypes"
+                    :key="searchType.type"
+                    class="px-4 py-1 text-white rounded-full transition-colors text-sm"
+                    :class="
+                      selectedStocksType.type === searchType.type ? 'bg-red-600' : 'bg-red-300'
+                    "
+                    @click="selectedStocksType = searchType"
+                  >
+                    {{ searchType.name }}
+                  </button>
+                </div>
                 <div
                   class="watchlist-list overflow-auto h-[calc(100vh-14rem)] transition-all transform"
                 >
@@ -575,6 +592,9 @@ const getSearchResult = async (searchQuery: string) => {
     isSearching.value = true
     const formData = new FormData()
     formData.append('action', 'msw_search_stocks')
+    if (selectedStocksType.value.type === 'crypto') {
+      searchQuery = transformSearchQuery(searchQuery)
+    }
     formData.append('query', searchQuery)
     const result = await axios
       .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
@@ -602,215 +622,25 @@ async function openModal() {
   }
 }
 
-
-function addUSDIfCryptocurrencyRelated(inputString: string): string {
-  // List of the top 200 cryptocurrency names (you may need to update this list)
-  const cryptocurrencyNames: string[] = [
-    "Bitcoin",
-    "Ethereum",
-    "Tether USDt",
-    "BNB",
-    "XRP",
-    "USDC",
-    "Solana",
-    "Cardano",
-    "Dogecoin",
-    "TRON",
-    "Toncoin",
-    "Chainlink",
-    "Polygon",
-    "Polkadot",
-    "Wrapped Bitcoin",
-    "Litecoin",
-    "Dai",
-    "Shiba Inu",
-    "Bitcoin Cash",
-    "Avalanche",
-    "UNUS SED LEO",
-    "Stellar",
-    "TrueUSD",
-    "Cosmos",
-    "OKB",
-    "Monero",
-    "Uniswap",
-    "Ethereum Classic",
-    "Filecoin",
-    "Hedera",
-    "BUSD",
-    "Internet Computer",
-    "Cronos",
-    "Aptos",
-    "Lido DAO",
-    "VeChain",
-    "NEAR Protocol",
-    "Injective",
-    "Arbitrum",
-    "Aave",
-    "Optimism",
-    "The Graph",
-    "Maker",
-    "Mantle",
-    "Quant",
-    "THORChain",
-    "MultiversX",
-    "Immutable",
-    "Algorand",
-    "Stacks",
-    "Bitcoin SV",
-    "Neo",
-    "Render",
-    "Axie Infinity",
-    "Theta Network",
-    "The Sandbox",
-    "Decentraland",
-    "Tezos",
-    "XDC Network",
-    "EOS",
-    "Fantom",
-    "USDD",
-    "Synthetix",
-    "First Digital USD",
-    "Kava",
-    "Trust Wallet Token",
-    "Bitget Token",
-    "Flow",
-    "Mina",
-    "Chiliz",
-    "eCash",
-    "Conflux",
-    "PancakeSwap",
-    "ApeCoin",
-    "KuCoin Token",
-    "IOTA",
-    "Curve DAO Token",
-    "Rocket Pool",
-    "Sui",
-    "Frax Share",
-    "Pepe",
-    "Tether Gold",
-    "Zcash",
-    "PAX Gold",
-    "Klaytn",
-    "Arweave",
-    "Oasis Network",
-    "Pax Dollar",
-    "dYdX (ethDYDX)",
-    "BitTorrent(New)",
-    "GMX",
-    "Casper",
-    "WOO Network",
-    "Compound",
-    "Blur",
-    "GateToken",
-    "Nexo",
-    "Huobi Token",
-    "Terra Classic",
-    "1inch Network",
-    "Zilliqa",
-    "Dash",
-    "Astar",
-    "APENFT",
-    "Qtum",
-    "Celestia",
-    "Basic Attention Token",
-    "Tellor",
-    "Fetch.ai",
-    "SingularityNET",
-    "Enjin Coin",
-    "SafePal",
-    "Loopring",
-    "Flare",
-    "STEPN",
-    "NEM",
-    "Gnosis",
-    "FLOKI",
-    "Celo",
-    "Mask Network",
-    "Convex Finance",
-    "JUST",
-    "MX TOKEN",
-    "Holo",
-    "Terra",
-    "Theta Fuel",
-    "Ethereum Name Service",
-    "Osmosis",
-    "Bitcoin Gold",
-    "Helium",
-    "aelf",
-    "Threshold",
-    "Sei",
-    "WAX",
-    "Kusama",
-    "Decred",
-    "Audius",
-    "Siacoin",
-    "JasmyCoin",
-    "Aragon",
-    "Band Protocol",
-    "Livepeer",
-    "Worldcoin",
-    "Solar",
-    "yearn.finance",
-    "Balancer",
-    "Ontology",
-    "Harmony",
-    "Moonbeam",
-    "Hive",
-    "Status",
-    "Memecoin",
-    "EthereumPoW",
-    "Axelar",
-    "Storj",
-    "Biconomy",
-    "IOST",
-    "Centrifuge",
-    "Bone ShibaSwap",
-    "Polymesh",
-    "Gemini Dollar",
-    "ssv.network",
-    "Nervos Network",
-    "Magic",
-    "Vulcan Forged PYR",
-    "Horizen",
-    "Kadena",
-    "SKALE",
-    "Alchemy Pay",
-    "Liquity",
-    "Galxe",
-    "Kyber Network Crystal v2",
-    "BORA",
-    "Loom Network",
-    "tomiNet",
-    "Lisk",
-    "Venus",
-    "Ontology Gas",
-    "Reserve Rights",
-    "Stratis",
-    "Viction",
-    "Flux",
-    "Orbs",
-    "Pundi X (New)",
-    "STP",
-    "DigiByte",
-    "Coin98"
-];
-
-  // Convert the input string to lowercase for case-insensitive matching
-  const lowercaseInput = inputString.toLowerCase();
-
-
-  // Check if at least 3 letters from a cryptocurrency name are found in the input string
-  const isCryptocurrencyRelated = cryptocurrencyNames.some(cryptoName =>
-    cryptoName.toLowerCase().split('').filter(letter =>
-      lowercaseInput.includes(letter)
-    ).length >= 3
-  );
-
-  // Add 'USD' to the string if it's cryptocurrency-related
-  if (isCryptocurrencyRelated) {
-    return inputString + ' USD';
+function transformSearchQuery(inputString: string): string {
+  if (selectedStocksType.value.type === 'crypto') {
+    return inputString + ' USD'
   } else {
-    return inputString;
+    return inputString
   }
 }
+
+const searchTypes = [
+  { type: 'stocks', name: 'Stocks' },
+  { type: 'crypto', name: 'Cryptocurrencies' }
+]
+
+const selectedStocksType = ref(searchTypes[0])
+
+watch(
+  () => selectedStocksType.value,
+  async () => {
+    searchList.value = await getSearchResult(searchQuery.value || '')
+  }
+)
 </script>
