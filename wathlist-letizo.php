@@ -227,7 +227,7 @@ function letizo_get_stocks_data()
 add_action('wp_ajax_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
 add_action('wp_ajax_nopriv_watchlist_letizo_get_stocks_data', 'letizo_get_stocks_data');
 
-function get_default_stocks_list()
+function get_default_stocks_data()
 {
     $symbols_string = "AAPL,TSLA,NVDA,BTC-USD";
 
@@ -244,8 +244,8 @@ function get_default_stocks_list()
     echo json_encode($formatted_data);
 }
 
-add_action('wp_ajax_watchlist_get_default_stocks_list', 'get_default_stocks_list');
-add_action('wp_ajax_nopriv_watchlist_get_default_stocks_list', 'get_default_stocks_list');
+add_action('wp_ajax_watchlist_get_default_stocks_data', 'get_default_stocks_data');
+add_action('wp_ajax_nopriv_watchlist_get_default_stocks_data', 'get_default_stocks_data');
 
 
 function letizo_save_stocks_data_by_user_id()
