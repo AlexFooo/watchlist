@@ -322,7 +322,7 @@ add_shortcode('letizo-watchlist', 'render_letizo_watchlist_shortcode');
 function render_letizo_sidebar_stocks_shortcode($atts, $content = null)
 {
 
-    $element_id =  'sidebar-stocks-app';
+    $element_id =  'app';
 
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
