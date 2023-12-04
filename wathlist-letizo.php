@@ -294,7 +294,7 @@ function get_sidebar_stocks()
 
     $result = array_values($result);
 
-    wp_send_json(['stocks_data' => $result]);
+    wp_send_json(['stockss_data' => $result]);
     die();
 }
 
