@@ -133,6 +133,7 @@ function format_stock_data($stock_data)
         "dividend_rate_ta",
         "last_update",
         "logo",
+        "category",
     ];
 
     foreach ($stock_data as $symbol => $data) {
@@ -230,18 +231,12 @@ add_action('wp_ajax_nopriv_watchlist_letizo_get_stocks_data', 'letizo_get_stocks
 function get_default_stocks_data()
 {
     $symbols_string = "AAPL,TSLA,NVDA,BTC-USD";
+    $_REQUEST['symbols_string'] = $symbols_string;
 
-    $config = get_api_config();
-    $api = new MassiveStockWidgets\API($config);
-    $api->auth_check();
-
-    $symbols = explode(",", $symbols_string);
-    $stock_data = $api->batch_request($symbols);
-    $formatted_data = [
-        'stocks_data' => format_stock_data($stock_data),
-    ];
-
-    echo json_encode($formatted_data);
+    ob_start();
+    letizo_get_stocks_data();
+    $result = ob_get_clean();
+    echo $result;
 }
 
 add_action('wp_ajax_watchlist_get_default_stocks_data', 'get_default_stocks_data');
@@ -270,7 +265,41 @@ add_action('wp_ajax_watchlist_letizo_save_stocks_data_by_user_id', 'letizo_save_
 add_action('wp_ajax_nopriv_watchlist_letizo_save_stocks_data_by_user_id', 'letizo_save_stocks_data_by_user_id');
 
 
+function get_sidebar_stocks()
+{
+    $config = get_api_config();
+    $api = new MassiveStockWidgets\API($config);
+    $api->auth_check();
 
+    $symbols_categories = [
+        'indices' => ["PG", "MRK", "HD", "TRV", "WBA", "MMM"],
+        'bonds' => ["INTC", "V", "IBM", "BA", "WMT", "CSCO"],
+        'forex' => ["NKE", "DIS", "JNJ", "XOM", "JPM", "BRK.B"],
+        'commodity' => ["PFE", "UNH", "VZ", "CVX", "KO", "GS"],
+        'stocks' => ["AAPL", "TSLA", "GOOGL", "MSFT", "AMZN", "FB"],
+    ];
+
+    $result = [];
+
+    foreach ($symbols_categories as $category => $symbols) {
+        $stock_data = $api->batch_request($symbols);
+        $formatted_data = format_stock_data($stock_data);
+
+        foreach ($formatted_data as &$item) {
+            $item['category'] = $category;
+        }
+
+        $result = array_merge($result, $formatted_data);
+    }
+
+    $result = array_values($result);
+
+    wp_send_json(['stocks_data' => $result]);
+    die();
+}
+
+add_action('wp_ajax_watchlist_get_sidebar_stocks', 'get_sidebar_stocks');
+add_action('wp_ajax_nopriv_watchlist_get_sidebar_stocks', 'get_sidebar_stocks');
 
 
 
