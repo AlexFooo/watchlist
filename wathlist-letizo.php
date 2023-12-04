@@ -234,7 +234,7 @@ function get_default_stocks_data()
     $config = get_api_config();
     $api = new MassiveStockWidgets\API($config);
     $api->auth_check();
-    
+
     $symbols = explode(",", $symbols_string);
     $stock_data = $api->batch_request($symbols);
     $formatted_data = [
@@ -255,11 +255,10 @@ function letizo_save_stocks_data_by_user_id()
 
 
     if (isset($symbols_string) && isset($user_id)) {
-        
+
         update_user_meta($user_id, 'letizo_user_watchlist_symbols_string', $symbols_string);
         $result = letizo_get_stocks_data();
         echo $result;
-
     } else {
         echo json_encode(['success' => false, 'error' => 'symbols_string is missing']);
     }
@@ -290,3 +289,20 @@ function render_letizo_watchlist_shortcode($atts, $content = null)
     return $html_tag . $script_tag . $css_tag;
 }
 add_shortcode('letizo-watchlist', 'render_letizo_watchlist_shortcode');
+
+function render_letizo_sidebar_stocks_shortcode($atts, $content = null)
+{
+
+    $element_id =  'sidebar-stocks-app';
+
+    $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
+    $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
+    $html_tag = '<div id="' . $element_id . '"></div> ';
+    $script_tag = '<script type="module">window.isSidebarStocks = true</script>
+     <script type="module" src="' . $script_src . '"></script> ';
+    $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
+
+
+    return $html_tag . $script_tag . $css_tag;
+}
+add_shortcode('letizo-sidebar-stocks', 'render_letizo_sidebar_stocks_shortcode');
