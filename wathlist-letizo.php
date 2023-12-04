@@ -286,7 +286,6 @@ function get_sidebar_stocks()
         $stock_data = $api->batch_request($symbols);
         $formatted_data = format_stock_data($stock_data);
 
-        
         foreach ($formatted_data as &$item) {
             $item['category'] = $category;
         }
@@ -294,7 +293,10 @@ function get_sidebar_stocks()
         $result = array_merge($result, $formatted_data);
     }
 
-    echo json_encode(['stocks_data' => $result]);
+    $result = array_values($result);
+
+    wp_send_json(['stocks_data' => $result]);
+    die();
 }
 
 add_action('wp_ajax_watchlist_get_sidebar_stocks', 'get_sidebar_stocks');
