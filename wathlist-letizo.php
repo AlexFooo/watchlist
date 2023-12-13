@@ -272,11 +272,11 @@ function get_sidebar_stocks()
     $api->auth_check();
 
     $symbols_categories = [
-        'indices' => ["PG", "MRK", "HD", "TRV", "WBA", "MMM"],
-        'bonds' => ["INTC", "V", "IBM", "BA", "WMT", "CSCO"],
-        'forex' => ["NKE", "DIS", "JNJ", "XOM", "JPM", "BRK.B"],
-        'commodity' => ["PFE", "UNH", "VZ", "CVX", "KO", "GS"],
-        'stocks' => ["AAPL", "TSLA", "GOOGL", "MSFT", "AMZN", "FB"],
+        'stocks' => ["AAPL", "TSLA", "GOOGL", "MSFT", "AMZN", "NVDA"],
+        'indices' => ["^GSPC", "^NDX", "^DJI", "^N225", "^GDAXI", "^FTSE"],
+        'bonds' => ["ZB=F", "UB=F"],
+        'forex' => ["EURUSD=X", "GBPUSD=X", "CHF=X", "AUDUSD=X", "INR=X", "KRW=X"],
+        'commodity' => ["GC=F", "CL=F", "NG=F"],
     ];
 
     $result = [];
@@ -286,7 +286,11 @@ function get_sidebar_stocks()
         $formatted_data = format_stock_data($stock_data);
 
         foreach ($formatted_data as &$item) {
+            
             $item['category'] = $category;
+
+            
+            $item['slug'] = ($category === 'bonds') ? 'government-bonds' : (($category === 'forex') ? 'currencies' : strtolower($category));
         }
 
         $result = array_merge($result, $formatted_data);
