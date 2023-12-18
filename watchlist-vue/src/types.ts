@@ -13,6 +13,7 @@ export interface Stock {
   previous_close: number
   change: number
   change_percent: number
+  slug?: string
   volume: number
   market_cap: number
   '52_week_low': number

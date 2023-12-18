@@ -335,3 +335,22 @@ function render_letizo_sidebar_stocks_shortcode($atts, $content = null)
     return $html_tag . $script_tag . $css_tag;
 }
 add_shortcode('letizo-sidebar-stocks', 'render_letizo_sidebar_stocks_shortcode');
+
+
+function render_letizo_add_to_watchlist_shortcode($atts, $content = null)
+{
+    $stockSymbol = $atts['stockSymbol'];
+
+    $element_id =  'add-to-watchlist-app';
+
+    $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
+    $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
+    $html_tag = '<div id="' . $element_id . '"></div> ';
+    $script_tag = '<script type="module">window.stockSymbol = "' . $stockSymbol . '</script>
+     <script type="module" src="' . $script_src . '"></script> ';
+    $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
+
+
+    return $html_tag . $script_tag . $css_tag;
+}
+add_shortcode('letizo-watchlist-add-button', 'render_letizo_add_to_watchlist_shortcode');

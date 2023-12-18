@@ -85,7 +85,7 @@
           </Transition>
 
           <template v-for="stock in userStocksToShow" :key="stock.id">
-            <a :href="`/stocks/${stock.symbol}`">
+            <a :href="`/${stock.slug}/${stock.symbol}`">
               <WatchListStock :stock="stock" class="hover:bg-slate-50 transition-colors px-4">
                 <template #right>
                   <Transition
