@@ -286,10 +286,10 @@ function get_sidebar_stocks()
         $formatted_data = format_stock_data($stock_data);
 
         foreach ($formatted_data as &$item) {
-            
+
             $item['category'] = $category;
 
-            
+
             $item['slug'] = ($category === 'bonds') ? 'government-bonds' : (($category === 'forex') ? 'currencies' : strtolower($category));
         }
 
@@ -326,7 +326,7 @@ add_shortcode('letizo-watchlist', 'render_letizo_watchlist_shortcode');
 function render_letizo_sidebar_stocks_shortcode($atts, $content = null)
 {
 
-    $element_id =  'app';
+    $element_id =  'sidebar-stocks-app';
 
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
@@ -345,7 +345,7 @@ function render_letizo_add_to_watchlist_shortcode($atts, $content = null)
 {
     $stockSymbol = $atts['stockSymbol'];
 
-    $element_id =  'add-to-watchlist-app';
+    $element_id =  'add-to-watchlist-button-app';
 
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';

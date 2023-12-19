@@ -1,6 +1,6 @@
 <template>
-  <AddStockButton v-if="stockSymbol" :stockSymbol="stockSymbol" />
-  <SidebarStocks v-else-if="isSidebar" />
+  <AddStockButton v-if="stockSymbol && type === 'add-to-watchlist-button'" :stockSymbol="stockSymbol" />
+  <SidebarStocks v-else-if="type === 'sidebar'" />
   <UserWatchList v-else />
 </template>
 <script setup lang="ts">
@@ -9,10 +9,11 @@ import SidebarStocks from './components/SidebarStocks.vue'
 import { computed } from 'vue'
 import AddStockButton from './components/AddStockButton.vue'
 
-const stockSymbol = window.stockSymbol || 'aapl'
-const isSidebar = window.isSidebarStocks
-if (isSidebar) {
-  window.isStockPage = false
+export interface Props {
+  type: 'add-to-watchlist-button' | 'sidebar' | 'watchlist'
+  stockSymbol: string | null
 }
-const isStockPage = window
+const props = defineProps<Props>()
+
+
 </script>

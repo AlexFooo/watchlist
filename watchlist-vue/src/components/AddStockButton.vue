@@ -47,7 +47,7 @@
           </svg>
           <span> Go to Watchlist</span></a
         >
-        <button @click="removeStock" class="py-2 px-3 hover:bg-slate-100 flex gap-2 items-center w-full">
+        <button v-if="added" @click="removeStock" class="py-2 px-3 hover:bg-slate-100 flex gap-2 items-center w-full">
           <svg
             width="24"
             height="24"
