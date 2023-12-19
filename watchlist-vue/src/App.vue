@@ -6,7 +6,6 @@
 <script setup lang="ts">
 import UserWatchList from './components/UserWatchList.vue'
 import SidebarStocks from './components/SidebarStocks.vue'
-import { computed } from 'vue'
 import AddStockButton from './components/AddStockButton.vue'
 
 export interface Props {

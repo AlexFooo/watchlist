@@ -310,11 +310,10 @@ add_action('wp_ajax_nopriv_watchlist_get_sidebar_stocks', 'get_sidebar_stocks');
 function render_letizo_watchlist_shortcode($atts, $content = null)
 {
 
-    $element_id =  'app';
 
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
-    $html_tag = '<div id="' . $element_id . '" class="letizo-vue-app" data-type="watchlist"></div> ';
+    $html_tag = '<div class="letizo-vue-app" data-type="watchlist"></div> ';
     $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
     $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
 
@@ -326,11 +325,9 @@ add_shortcode('letizo-watchlist', 'render_letizo_watchlist_shortcode');
 function render_letizo_sidebar_stocks_shortcode($atts, $content = null)
 {
 
-    $element_id =  'sidebar-stocks-app';
-
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
-    $html_tag = '<div id="' . $element_id . '" class="letizo-vue-app" data-type="sidebar"></div> ';
+    $html_tag = '<div class="letizo-vue-app" data-type="sidebar"></div> ';
     $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
     $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
 
@@ -344,11 +341,9 @@ function render_letizo_add_to_watchlist_shortcode($atts, $content = null)
 {
     $stockSymbol = $atts['symbol'];
 
-    $element_id =  'add-to-watchlist-button-app';
-
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
-    $html_tag = '<div id="' . $element_id . '" class="letizo-vue-app"  data-type="add-to-watchlist-button" data-symbol="' . $stockSymbol . '"></div> ';
+    $html_tag = '<div class="letizo-vue-app" data-type="add-to-watchlist-button" data-symbol="' . $stockSymbol . '"></div>';
     $script_tag = '<script type="module" src="' . $script_src . '"></> ';
     $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
 

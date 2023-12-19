@@ -69,11 +69,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import WatchListStock from './WatchListStock.vue'
+import { computed,  ref } from 'vue'
 import axios from 'axios'
 import type { Stock } from '@/types'
-import { onClickOutside, useStorage, watchDebounced } from '@vueuse/core'
+import { onClickOutside,  } from '@vueuse/core'
 
 export interface Props {
   stockSymbol: string
