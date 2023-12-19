@@ -15,11 +15,11 @@ if (stockSymbol) {
   window.stockSymbol = null
 }
 
-let isSidebar = window.isSidebar || false
+let isSidebar = window.isSidebarStocks || false
 if (isSidebar) {
   appType = 'sidebar'
   elementSelector = '#sidebar-stocks-app'
-  window.isSidebar = null
+  window.isSidebarStocks = null
 }
 
 const app = createApp(App, { type: appType, stockSymbol })
