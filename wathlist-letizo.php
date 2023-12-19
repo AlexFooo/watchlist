@@ -314,7 +314,7 @@ function render_letizo_watchlist_shortcode($atts, $content = null)
 
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
-    $html_tag = '<div id="' . $element_id . '"></div> ';
+    $html_tag = '<div id="' . $element_id . '" class="letizo-vue-app" data-type="watchlist"></div> ';
     $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
     $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
 
@@ -330,9 +330,8 @@ function render_letizo_sidebar_stocks_shortcode($atts, $content = null)
 
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
-    $html_tag = '<div id="' . $element_id . '"></div> ';
-    $script_tag = '<script type="module">window.isSidebarStocks = true</script>
-     <script type="module" src="' . $script_src . '"></script> ';
+    $html_tag = '<div id="' . $element_id . '" class="letizo-vue-app" data-type="sidebar"></div> ';
+    $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
     $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
 
 
@@ -349,9 +348,8 @@ function render_letizo_add_to_watchlist_shortcode($atts, $content = null)
 
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
-    $html_tag = '<div id="' . $element_id . '"></div> ';
-    $script_tag = '<script type="module">window.stockSymbol = "' . $stockSymbol . '"</script>
-     <script type="module" src="' . $script_src . '"></script> ';
+    $html_tag = '<div id="' . $element_id . '" class="letizo-vue-app"  data-type="add-to-watchlist-button" data-symbol="' . $stockSymbol . '"></div> ';
+    $script_tag = '<script type="module" src="' . $script_src . '"></> ';
     $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
 
 

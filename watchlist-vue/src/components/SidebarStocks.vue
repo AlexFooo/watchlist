@@ -131,6 +131,7 @@
               </WatchListStock>
             </a>
           </template>
+          <div v-if="isError" class="p-4 text-red-600 bg-white font-bold">Error </div>
         </div>
       </Transition>
     </div>
@@ -167,6 +168,7 @@ const userStocksToShow = computed({
 })
 
 const isLoading = ref(true)
+const isError = ref(false)
 const getSidebarStocks = async (): Promise<Stock[]> => {
   try {
     isLoading.value = true
@@ -185,6 +187,7 @@ const getSidebarStocks = async (): Promise<Stock[]> => {
     return stocks
   } catch (error) {
     console.log(error)
+    isError.value = true
     return []
   } finally {
     isLoading.value = false
