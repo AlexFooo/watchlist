@@ -343,18 +343,18 @@ add_shortcode('letizo-sidebar-stocks', 'render_letizo_sidebar_stocks_shortcode')
 
 function render_letizo_add_to_watchlist_shortcode($atts, $content = null)
 {
-    $stockSymbol = $atts['stockSymbol'];
+    $stockSymbol = $atts['symbol'];
 
     $element_id =  'add-to-watchlist-button-app';
 
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
     $html_tag = '<div id="' . $element_id . '"></div> ';
-    $script_tag = '<script type="module">window.stockSymbol = "' . $stockSymbol . '</script>
+    $script_tag = '<script type="module">window.stockSymbol = "' . $stockSymbol . '"</script>
      <script type="module" src="' . $script_src . '"></script> ';
     $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
 
 
     return $html_tag . $script_tag . $css_tag;
 }
-add_shortcode('letizo-watchlist-add-button', 'render_letizo_add_to_watchlist_shortcode');
+add_shortcode('letizo-add-stock-to-watchlist-button', 'render_letizo_add_to_watchlist_shortcode');
