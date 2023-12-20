@@ -69,7 +69,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed,  ref } from 'vue'
+import { computed,  onMounted,  ref } from 'vue'
 import axios from 'axios'
 import type { Stock } from '@/types'
 import { onClickOutside,  } from '@vueuse/core'
@@ -116,7 +116,11 @@ if(!userId) {
     isLoading.value = false
   }
 }
-setUserStocksSymbols()
+
+onMounted(() => {
+  setUserStocksSymbols()
+})
+
 
 
 const isSaving = ref(false)
