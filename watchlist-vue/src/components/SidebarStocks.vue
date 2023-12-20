@@ -131,7 +131,7 @@
               </WatchListStock>
             </a>
           </template>
-          <div v-if="isError" class="p-4 text-red-600 bg-white font-bold">Error </div>
+          <div v-if="isError" class="p-4 text-red-600 bg-white font-bold">Error</div>
         </div>
       </Transition>
     </div>
@@ -206,7 +206,7 @@ const stockTypes = computed(() => {
   })
   return Array.from(userStocksTypes)
 })
-const selectedStocksType = ref<string>('indices')
+const selectedStocksType = ref<string>('stocks')
 
 let formatter = Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: 6 })
 
