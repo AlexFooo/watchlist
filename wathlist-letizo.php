@@ -344,7 +344,7 @@ function render_letizo_add_to_watchlist_shortcode($atts, $content = null)
     $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
     $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
     $html_tag = '<div class="letizo-vue-app" data-type="add-to-watchlist-button" data-symbol="' . $stockSymbol . '"></div>';
-    $script_tag = '<script type="module" src="' . $script_src . '"></> ';
+    $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
     $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
 
 
