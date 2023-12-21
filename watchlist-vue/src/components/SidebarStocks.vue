@@ -142,16 +142,8 @@ import { computed, onMounted, ref } from 'vue'
 import WatchListStock from './WatchListStock.vue'
 import axios from 'axios'
 import type { Stock } from '@/types'
-import { useStorage, watchDebounced } from '@vueuse/core'
-import SortingListButton from './SortingListButton.vue'
-import AddingListButton from './AddingListButton.vue'
-import EditingListButton from './EditingListButton.vue'
 
-const userId = window.userId || null
-
-const userStocksSymbols = ref<string[] | null>(null)
 const userStocks = ref<Stock[]>([])
-const startTradingButtonLink = computed<string | null>(() => window.startTradingButtonLink || null)
 
 const userStocksToShow = computed({
   get() {
@@ -193,8 +185,9 @@ const getSidebarStocks = async (): Promise<Stock[]> => {
     isLoading.value = false
   }
 }
-getSidebarStocks()
-const sortField = useStorage('d12edf32esvbwe', 'custom')
+onMounted(() => {
+  getSidebarStocks()
+})
 
 const stockTypes = computed(() => {
   const userStocksTypes = new Set<string>()
@@ -207,40 +200,4 @@ const stockTypes = computed(() => {
   return Array.from(userStocksTypes)
 })
 const selectedStocksType = ref<string>('stocks')
-
-let formatter = Intl.NumberFormat('en', { notation: 'compact', maximumSignificantDigits: 6 })
-
-function sortByField<T>(arr: T[], fieldName: string): T[] {
-  return arr.slice().sort((a, b) => {
-    if (typeof a[fieldName] === 'string' && typeof b[fieldName] === 'string') {
-      // Sort strings alphabetically
-      return a[fieldName].localeCompare(b[fieldName])
-    } else if (typeof a[fieldName] === 'number' && typeof b[fieldName] === 'number') {
-      // Sort numbers in descending order
-      return b[fieldName] - a[fieldName]
-    }
-    return 0
-  })
-}
-
-const getDefaultStocks = async (): Promise<Stock[]> => {
-  try {
-    isLoading.value = true
-    const formData = new FormData()
-    formData.append('action', 'watchlist_get_default_stocks_data')
-
-    const stocks = await axios
-      .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
-      .then((data) => data.data?.stocks_data || [])
-
-    userStocks.value = stocks
-
-    return stocks
-  } catch (error) {
-    console.log(error)
-    return []
-  } finally {
-    isLoading.value = false
-  }
-}
 </script>

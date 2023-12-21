@@ -289,8 +289,8 @@ function get_sidebar_stocks()
 
             $item['category'] = $category;
 
-
-            $item['slug'] = ($category === 'bonds') ? 'government-bonds' : (($category === 'forex') ? 'currencies' : strtolower($category));
+            $item['slug'] = 'stocks';
+            // $item['slug'] = ($category === 'bonds') ? 'government-bonds' : (($category === 'forex') ? 'currencies' : strtolower($category));
         }
 
         $result = array_merge($result, $formatted_data);
