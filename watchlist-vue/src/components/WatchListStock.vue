@@ -15,7 +15,7 @@
             0
           )}.svg`
         }"
-        alt=""
+        :alt="stock.symbol.toUpperCase()"
         class="w-9 rounded-full"
       />
       <div class="stock flex flex-col relative items-start justify-center">
