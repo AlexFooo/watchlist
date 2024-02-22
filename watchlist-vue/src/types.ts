@@ -1,3 +1,9 @@
+export interface PriceAlert {
+  symbol: string
+  current_price: number
+  desired_price: number
+}
+
 export interface Stock {
   symbol: string
   company_name: string
@@ -28,6 +34,7 @@ export interface Stock {
   dividend_rate_ta: number
   last_update: number
   logo: string
+  price_alert: PriceAlert | null 
 }
 
 export interface SearchStock {

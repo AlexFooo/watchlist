@@ -47,7 +47,11 @@
           </svg>
           <span> Go to Watchlist</span></a
         >
-        <button v-if="added" @click="removeStock" class="py-2 px-3 hover:bg-slate-100 flex gap-2 items-center w-full">
+        <button
+          v-if="added"
+          @click="removeStock"
+          class="py-2 px-3 hover:bg-slate-100 flex gap-2 items-center w-full"
+        >
           <svg
             width="24"
             height="24"
@@ -69,10 +73,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed,  onMounted,  ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import axios from 'axios'
 import type { Stock } from '@/types'
-import { onClickOutside,  } from '@vueuse/core'
+import { onClickOutside } from '@vueuse/core'
 
 export interface Props {
   stockSymbol: string
@@ -90,26 +94,22 @@ const added = computed(() => {
 })
 const userId = window.userId || null
 
-
-
 const isLoading = ref(true)
 const setUserStocksSymbols = async (): Promise<void> => {
   try {
-if(!userId) {
-  userStocksSymbols.value = localStorage.getItem('userStocksSymbols')?.split(',') || []
-} else {
-  isLoading.value = true
-    const formData = new FormData()
-    formData.append('action', 'watchlist_letizo_get_stocks_data')
+    if (!userId) {
+      userStocksSymbols.value = localStorage.getItem('userStocksSymbols')?.split(',') || []
+    } else {
+      isLoading.value = true
+      const formData = new FormData()
+      formData.append('action', 'watchlist_letizo_get_stocks_data')
       formData.append('user_id', userId)
 
-    const stocks = await axios
-      .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
-      .then((data) => data.data?.stocks_data || [])
-    userStocksSymbols.value = stocks.map((s: Stock) => s.symbol)
-}
-
-
+      const stocks = await axios
+        .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
+        .then((data) => data.data?.stocks_data || [])
+      userStocksSymbols.value = stocks.map((s: Stock) => s.symbol)
+    }
   } catch (error) {
     console.log(error)
   } finally {
@@ -120,8 +120,6 @@ if(!userId) {
 onMounted(() => {
   setUserStocksSymbols()
 })
-
-
 
 const isSaving = ref(false)
 const saveUserStocksString = async (userStocksSymbolsString?: string) => {
@@ -154,25 +152,17 @@ const saveUserStocksString = async (userStocksSymbolsString?: string) => {
   }
 }
 
-
-
-
 const buttonClickHandler = async () => {
   if (added.value) {
-    userStocksSymbols.value = userStocksSymbols.value?.filter(
-      (s) => s !== props.stockSymbol
-    ) || []
+    userStocksSymbols.value = userStocksSymbols.value?.filter((s) => s !== props.stockSymbol) || []
   } else {
- userStocksSymbols.value?.push(props.stockSymbol) 
+    userStocksSymbols.value?.push(props.stockSymbol)
   }
   saveUserStocksString(userStocksSymbols.value?.join(','))
-
 }
 
 const removeStock = async () => {
-  userStocksSymbols.value = userStocksSymbols.value?.filter(
-    (s) => s !== props.stockSymbol
-  ) || []
+  userStocksSymbols.value = userStocksSymbols.value?.filter((s) => s !== props.stockSymbol) || []
   saveUserStocksString(userStocksSymbols.value?.join(','))
 }
 </script>
