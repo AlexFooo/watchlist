@@ -133,7 +133,9 @@ function format_stock_data($stock_data)
         "dividend_rate_ta",
         "last_update",
         "logo",
-        "category",
+        "price_alert"
+        
+        
     ];
 
     foreach ($stock_data as $symbol => $data) {
@@ -193,7 +195,6 @@ add_shortcode('stock-data', 'render_stock_assets_json');
 
 function letizo_get_stocks_data()
 {
-
     $config = get_api_config();
     $api = new MassiveStockWidgets\API($config);
     $api->auth_check();
@@ -210,18 +211,47 @@ function letizo_get_stocks_data()
         }
     }
 
-
-
     $symbols = explode(",", $symbols_string);
     $stock_data = $api->batch_request($symbols);
-    $formatted_data = [
-        'stocks_data' => format_stock_data($stock_data),
-    ];
-    echo json_encode($formatted_data);
+    $formated_stock_data = format_stock_data($stock_data);
+    
+    foreach ($formated_stock_data as &$stock) {
+        $symbol = $stock["symbol"];
+        $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : get_current_user_id();
+        $user_alerts_json = get_user_meta($user_id, 'letizo_watchlist_stock_alerts', true);
+        $user_alerts = json_decode($user_alerts_json, true);
+        
+        $price_alert = null;
+        foreach ($user_alerts as $alert) {
+            if ($alert['symbol'] === $symbol) {
+                
+                $current_price = floatval($alert['current_price']);
+                $desired_price = floatval($alert['desired_price']);
+        
+                
+                $price_alert = [
+                    "current_price" => $current_price,
+                    "desired_price" => $desired_price
+                ];
+                break;
+            }
+        }
+        
+        
+        $stock["price_alert"] = ($symbol === "TSLA") ? ["current_price" => 5000, "desired_price" => 8000] : $price_alert;
+    }
 
+    $response = [
+        'stocks_data' => $formated_stock_data,
+    ];
+    echo json_encode($response);
 
     die();
 }
+
+
+
+
 
 
 
@@ -242,6 +272,16 @@ function get_default_stocks_data()
 add_action('wp_ajax_watchlist_get_default_stocks_data', 'get_default_stocks_data');
 add_action('wp_ajax_nopriv_watchlist_get_default_stocks_data', 'get_default_stocks_data');
 
+
+function calculate_price_direction($current_price, $desired_price) {
+    if ($current_price < $desired_price) {
+        return "higher";
+    } elseif ($current_price > $desired_price) {
+        return "lower";
+    } else {
+        return "unchanged";
+    }
+}
 
 function letizo_save_stocks_data_by_user_id()
 {
@@ -351,3 +391,119 @@ function render_letizo_add_to_watchlist_shortcode($atts, $content = null)
     return $html_tag . $script_tag . $css_tag;
 }
 add_shortcode('letizo-add-stock-to-watchlist-button', 'render_letizo_add_to_watchlist_shortcode');
+
+
+
+
+
+
+
+function save_user_stock_alert_data() {
+    if (isset($_REQUEST['symbol'], $_REQUEST['current_price'], $_REQUEST['desired_price'])) {
+        $user_id = get_current_user_id() ? get_current_user_id() : ( isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null );
+        $symbol = $_REQUEST['symbol'];
+        $current_price = $_REQUEST['current_price'];
+        $desired_price = $_REQUEST['desired_price'];
+        $user_meta_json = get_user_meta($user_id, 'letizo_watchlist_stock_alerts', true);
+
+        if (empty($user_meta_json)) {
+            $user_meta = [];
+        } else {
+            $user_meta = json_decode($user_meta_json, true);
+        }
+
+        $symbol_updated = false;
+
+        foreach ($user_meta as &$stock_alert) {
+            if ($stock_alert['symbol'] === $symbol) {
+                $stock_alert['current_price'] = $current_price;
+                $stock_alert['desired_price'] = $desired_price;
+
+                
+                $direction = calculate_price_direction($current_price, $desired_price);
+                $stock_alert['price_direction'] = $direction;
+
+                $symbol_updated = true;
+                break;
+            }
+        }
+
+        if (!$symbol_updated) {
+            $new_stock_alert = [
+                'current_price' => $current_price,
+                'desired_price' => $desired_price,
+                'symbol' => $symbol
+            ];
+
+            
+            $direction = calculate_price_direction($current_price, $desired_price);
+            $new_stock_alert['price_direction'] = $direction;
+
+            $user_meta[] = $new_stock_alert;
+        }
+
+        $user_meta_json = json_encode($user_meta);
+
+        update_user_meta($user_id, 'letizo_watchlist_stock_alerts', $user_meta_json);
+
+        wp_send_json($user_meta);
+    } else {
+        wp_send_json(['error' => 'Missing data']);
+    }
+
+    wp_die();
+}
+
+
+
+add_action('wp_ajax_watchlist_save_user_stock_alert_data', 'save_user_stock_alert_data');
+add_action('wp_ajax_nopriv_watchlist_save_user_stock_alert_data', 'save_user_stock_alert_data');
+
+
+
+
+
+
+function delete_user_stock_alert_data() {
+    
+    if (isset($_REQUEST['symbol'])) {
+        $user_id = get_current_user_id() ? get_current_user_id() : ( isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : null );
+        $symbol = $_REQUEST['symbol'];
+        $user_meta_json = get_user_meta($user_id, 'letizo_watchlist_stock_alerts', true);
+
+        if (empty($user_meta_json)) {
+            wp_send_json(['error' => 'User data not found']);
+        }
+
+        $user_meta = json_decode($user_meta_json, true);
+
+        $updated_user_meta = [];
+
+        
+        foreach ($user_meta as $stock_alert) {
+            
+            if ($stock_alert['symbol'] === $symbol) {
+                continue;
+            }
+            
+            $updated_user_meta[] = $stock_alert;
+        }
+
+        
+        $updated_user_meta_json = json_encode($updated_user_meta);
+
+        
+        update_user_meta($user_id, 'letizo_watchlist_stock_alerts', $updated_user_meta_json);
+
+        
+        wp_send_json($updated_user_meta);
+    } else {
+        wp_send_json(['error' => 'Missing data']);
+    }
+
+    wp_die();
+}
+
+add_action('wp_ajax_watchlist_delete_user_stock_alert_data', 'delete_user_stock_alert_data');
+add_action('wp_ajax_nopriv_watchlist_delete_user_stock_alert_data', 'delete_user_stock_alert_data');
+
