@@ -238,7 +238,7 @@ function letizo_get_stocks_data()
         }
         
         
-        $stock["price_alert"] = ($symbol === "TSLA") ? ["current_price" => 5000, "desired_price" => 8000] : $price_alert;
+        $stock["price_alert"] =  $price_alert;
     }
 
     $response = [
