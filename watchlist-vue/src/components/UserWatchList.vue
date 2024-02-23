@@ -158,7 +158,9 @@
                       </div>
                       
                     </div>
-                    <button
+                    
+                  </div>
+                  <button
                         @click="openPriceAlertSettings(stock)"
                         class="hover:bg-gray-100 rounded-full p-2 transition-colors"
                       >
@@ -178,7 +180,6 @@
                           />
                         </svg>
                       </button>
-                  </div>
                   
                 </Transition>
               </template>
