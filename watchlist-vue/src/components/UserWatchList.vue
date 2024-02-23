@@ -114,6 +114,7 @@
                   leave-from-class="translate-y-0 opacity-100"
                   leave-to-class="-translate-y-8 opacity-0"
                 >
+                <div>
                   <div class="watchlist-item-right md:w-full">
                     <div
                       class="flex md:flex-nowrap flex-wrap md:items-center justify-end md:justify-between md:gap-10"
@@ -180,7 +181,7 @@
                           />
                         </svg>
                       </button>
-                  
+                    </div>
                 </Transition>
               </template>
             </WatchListStock>
