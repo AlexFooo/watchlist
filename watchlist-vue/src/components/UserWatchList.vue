@@ -97,6 +97,7 @@
               <div class="md:w-24 md:flex">CHANGE %</div>
               <div class="md:w-24 md:flex">MARKET CAP</div>
               <div class="md:w-24"></div>
+              <div class="md:w-10"></div>
             </div>
           </div>
           <div v-if="userStocks.length === 0">
