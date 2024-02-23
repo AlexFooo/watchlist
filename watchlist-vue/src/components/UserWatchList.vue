@@ -102,7 +102,7 @@
           <div v-if="userStocks.length === 0">
             <h2 class="text-lg text-center py-4 text-slate-500">No stocks added</h2>
           </div>
-          <template v-for="stock in userStocksToShow" :key="stock.id">
+          <template v-for="stock in userStocksToShow" :key="stock.symbol">
             <WatchListStock :stock="stock">
               <template #right>
                 <Transition
