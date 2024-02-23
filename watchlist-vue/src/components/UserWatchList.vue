@@ -88,7 +88,7 @@
             </div>
           </Transition>
           <div
-            class="py-3 border-y md:flex hidden gap-2 md:gap-20 md:items-center font-sans text-xs font-normal leading-none text-[#5E5E5E]"
+            class="py-3 border-y md:flex hidden gap-2 md:gap-16 md:items-center font-sans text-xs font-normal leading-none text-[#5E5E5E]"
           >
             <div class="md:flex w-60">COMPANY</div>
             <div class="md:flex md:gap-10 md:justify-between w-full md:pr-4">
@@ -97,6 +97,7 @@
               <div class="md:w-24 md:flex">CHANGE %</div>
               <div class="md:w-24 md:flex">MARKET CAP</div>
               <div class="md:w-24"></div>
+              <div class="md:w-10"></div>
             </div>
           </div>
           <div v-if="userStocks.length === 0">
@@ -114,7 +115,7 @@
                   leave-from-class="translate-y-0 opacity-100"
                   leave-to-class="-translate-y-8 opacity-0"
                 >
-                  <div class="watchlist-item-right md:w-full">
+                  <div class="watchlist-item-right md:w-full flex-1 md:flex-auto">
                     <div
                       class="flex md:flex-nowrap flex-wrap md:items-center justify-end md:justify-between md:gap-10"
                     >
@@ -156,7 +157,11 @@
                           >Start trading</a
                         >
                       </div>
-                      <button
+                      
+                    </div>
+                  </div>
+                </Transition>
+                <button
                         @click="openPriceAlertSettings(stock)"
                         class="hover:bg-gray-100 rounded-full p-2 transition-colors"
                       >
@@ -176,9 +181,6 @@
                           />
                         </svg>
                       </button>
-                    </div>
-                  </div>
-                </Transition>
               </template>
             </WatchListStock>
           </template>
@@ -200,7 +202,7 @@
         </TransitionChild>
 
         <div class="fixed inset-0 overflow-y-auto">
-          <div class="flex min-h-full md:items-center justify-center md:p-4 text-center">
+          <div class="flex min-h-full md:items-center justify-center md:p-4 text-center items-center">
             <TransitionChild
               as="template"
               enter="duration-300 ease-out"
@@ -211,7 +213,7 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden bg-white text-left align-middle shadow-xl transition-all"
+                class="w-full max-w-md transform overflow-hidden bg-white text-left align-middle shadow-xl transition-all "
               >
                 <DialogTitle
                   as="h3"
