@@ -88,7 +88,7 @@
             </div>
           </Transition>
           <div
-            class="py-3 border-y md:flex hidden gap-2 md:gap-20 md:items-center font-sans text-xs font-normal leading-none text-[#5E5E5E]"
+            class="py-3 border-y md:flex hidden gap-2 md:gap-16 md:items-center font-sans text-xs font-normal leading-none text-[#5E5E5E]"
           >
             <div class="md:flex w-60">COMPANY</div>
             <div class="md:flex md:gap-10 md:justify-between w-full md:pr-4">
