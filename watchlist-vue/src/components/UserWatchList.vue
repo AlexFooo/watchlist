@@ -202,7 +202,7 @@
         </TransitionChild>
 
         <div class="fixed inset-0 overflow-y-auto">
-          <div class="flex min-h-full md:items-center justify-center md:p-4 text-center">
+          <div class="flex min-h-full md:items-center justify-center md:p-4 text-center items-center">
             <TransitionChild
               as="template"
               enter="duration-300 ease-out"
@@ -213,7 +213,7 @@
               leave-to="opacity-0 scale-95"
             >
               <DialogPanel
-                class="w-full max-w-md transform overflow-hidden bg-white text-left align-middle shadow-xl transition-all"
+                class="w-full max-w-md transform overflow-hidden bg-white text-left align-middle shadow-xl transition-all "
               >
                 <DialogTitle
                   as="h3"
