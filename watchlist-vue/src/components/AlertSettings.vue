@@ -1,10 +1,17 @@
 <template>
-  <div class="p-4 border-b bg-gray-50">
-    <div class="max-w-xl m-auto">
-      <h3 class="font-bold text-sm mb-3">Notify me when {{ stock.symbol }} reaches:</h3>
-      <div class="mb-6">
-        <div>Set rate</div>
+  <div class="bg-gray-50">
+    <WatchListStock :stock="stock" class="bg-white">
+      <template #right>
+        <div class="flex flex-col justify-between items-center">
+          <div class="text-xs">Current price</div>
+          <div class="font-bold">${{ stock.price }}</div>
+        </div>
+      </template>
+    </WatchListStock>
 
+    <div class="max-w-xl m-auto py-4 px-6">
+      <h3 class="font-bold text-sm mb-2">Notify me when {{ stock.symbol }} reaches:</h3>
+      <div class="">
         <div v-if="priceAlert" class="border rounded-lg flex justify-between overflow-hidden">
           <button class="hover:bg-gray-100" @click="priceAlert.desired_price--">
             <svg
@@ -26,7 +33,7 @@
             </svg>
           </button>
           <input type="number" class="flex-1 text-center" v-model="priceAlert.desired_price" />
-          <button class="" @click="priceAlert.desired_price++">
+          <button class="hover:bg-gray-100" @click="priceAlert.desired_price++">
             <svg
               width="44"
               height="44"
@@ -44,19 +51,34 @@
           </button>
         </div>
       </div>
+      <div v-if="priceAlert" class="flex justify-between border rounded-lg mb-6 mt-2">
+        <button
+          v-for="percentage in percentages"
+          :key="percentage.value"
+          class="flex-1 py-1 px-2 text-xs hover:bg-gray-100 transition-colors"
+          @click="
+            priceAlert.desired_price = (
+              priceAlert.current_price *
+              (1 + percentage.value / 100)
+            ).toFixed(2)
+          "
+        >
+          {{ percentage.label }}
+        </button>
+      </div>
       <div class="mb-4 flex flex-col gap-3">
         <button
-          class="w-full bg-green-600 font-bold text-white rounded-md py-2 px-4 disabled:bg-slate-500 disabled:animate-pulse"
-          @click="createPriceAlert"
+          class="w-full bg-green-600 hover:bg-green-700 transition-colors font-bold text-white rounded-md py-2 px-4 disabled:bg-slate-500 disabled:animate-pulse"
+          @click="updatePriceAlert"
           :disabled="isUpdating"
         >
-          {{ mode === 'create' ? 'Create alert' : 'Update alert' }}
+          {{ mode === 'create' ? 'Create' : 'Update' }}
         </button>
         <button
           v-if="mode === 'update'"
-          class="w-full bg-red-500 font-bold text-white rounded-md py-2 px-4 disabled:bg-slate-500 disabled:animate-pulse"
+          class="w-full text-red-500 rounded-md py-1 px-4 disabled:bg-slate-500 disabled:animate-pulse hover:bg-red-50 transition-colors"
           @click="deletePriceAlert"
-          :disabled="isUpdating"
+          :disabled="isDeleting"
         >
           Delete alert
         </button>
@@ -68,12 +90,13 @@
 import type { Stock, PriceAlert } from '@/types'
 import axios from 'axios'
 import { computed, ref } from 'vue'
+import WatchListStock from './WatchListStock.vue'
 
 export interface Props {
   stock: Stock
 }
 const props = defineProps<Props>()
-const emit = defineEmits(['update:stock'])
+const emit = defineEmits(['update:stock', 'alertUpdated'])
 
 const stock = computed<Stock>({
   get() {
@@ -101,7 +124,7 @@ if (!priceAlert.value) {
 }
 
 const isUpdating = ref(false)
-const createPriceAlert = async () => {
+const updatePriceAlert = async () => {
   try {
     if (!priceAlert.value) return
     isUpdating.value = true
@@ -114,20 +137,21 @@ const createPriceAlert = async () => {
     const stocks = await axios
       .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
       .then((data) => data.data)
-    if (mode.value === 'create') {
-      stock.value.price_alert = priceAlert.value
-      mode.value = 'update'
-    }
+    stock.value.price_alert = priceAlert.value
+
+    emit('alertUpdated', priceAlert.value)
   } catch (error) {
     console.log(error)
   } finally {
     isUpdating.value = false
   }
 }
+
+const isDeleting = ref(false)
 const deletePriceAlert = async () => {
   try {
     if (!priceAlert.value) return
-    isUpdating.value = true
+    isDeleting.value = true
     const formData = new FormData()
     formData.append('action', 'watchlist_delete_user_stock_alert_data')
     formData.append('symbol', props.stock.symbol)
@@ -136,14 +160,39 @@ const deletePriceAlert = async () => {
       .post('https://letizo.com/wp-admin/admin-ajax.php', formData)
       .then((data) => data.data)
 
-    if (mode.value === 'update') {
-      mode.value = 'create'
-    }
     stock.value.price_alert = null
+    emit('alertUpdated', priceAlert.value)
   } catch (error) {
     console.log(error)
   } finally {
-    isUpdating.value = false
+    isDeleting.value = false
   }
 }
+
+const percentages = [
+  {
+    value: -20,
+    label: '-20%'
+  },
+  {
+    value: -10,
+    label: '-10%'
+  },
+  {
+    value: -5,
+    label: '-5%'
+  },
+  {
+    value: 5,
+    label: '+5%'
+  },
+  {
+    value: 10,
+    label: '+10%'
+  },
+  {
+    value: 20,
+    label: '+20%'
+  }
+]
 </script>
