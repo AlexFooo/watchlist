@@ -115,7 +115,7 @@
                   leave-from-class="translate-y-0 opacity-100"
                   leave-to-class="-translate-y-8 opacity-0"
                 >
-                  <div class="watchlist-item-right md:w-full">
+                  <div class="watchlist-item-right md:w-full flex-1 md:flex-inherit">
                     <div
                       class="flex md:flex-nowrap flex-wrap md:items-center justify-end md:justify-between md:gap-10"
                     >
