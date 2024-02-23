@@ -97,7 +97,6 @@
               <div class="md:w-24 md:flex">CHANGE %</div>
               <div class="md:w-24 md:flex">MARKET CAP</div>
               <div class="md:w-24"></div>
-              <div class="md:w-10"></div>
             </div>
           </div>
           <div v-if="userStocks.length === 0">
@@ -157,7 +156,10 @@
                           >Start trading</a
                         >
                       </div>
-                      <button
+                      
+                    </div>
+                  </div>
+                  <button
                         @click="openPriceAlertSettings(stock)"
                         class="hover:bg-gray-100 rounded-full p-2 transition-colors"
                       >
@@ -177,8 +179,6 @@
                           />
                         </svg>
                       </button>
-                    </div>
-                  </div>
                 </Transition>
               </template>
             </WatchListStock>
