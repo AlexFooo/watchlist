@@ -13,7 +13,7 @@
       <h3 class="font-bold text-sm mb-2">Notify me when {{ stock.symbol }} reaches:</h3>
       <div class="">
         <div v-if="priceAlert" class="border rounded-lg flex justify-between overflow-hidden">
-          <button class="hover:bg-gray-100" @click="priceAlert.desired_price--">
+          <button class="hover:bg-gray-200 bg-slate-100" @click="priceAlert.desired_price--">
             <svg
               width="44"
               height="44"
@@ -33,7 +33,7 @@
             </svg>
           </button>
           <input type="number" class="flex-1 text-center" v-model="priceAlert.desired_price" />
-          <button class="hover:bg-gray-100" @click="priceAlert.desired_price++">
+          <button class="hover:bg-gray-200 bg-slate-100" @click="priceAlert.desired_price++">
             <svg
               width="44"
               height="44"

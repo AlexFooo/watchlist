@@ -1,6 +1,8 @@
 <template>
   <Menu as="div" class="relative inline-block text-left">
-    <MenuButton class="p-3 aspect-square hover:bg-black/10 rounded-full transition-colors">
+    <MenuButton
+      class="px-4 py-2 hover:bg-black/10 rounded-full transition-colors flex items-center gap-2 text-slate-500"
+    >
       <svg
         width="24"
         height="24"
@@ -14,6 +16,8 @@
         />
         <path d="M11 9L9.59 10.41L7 7.83V19H5V7.83L2.41 10.41L1 9L6 4L11 9Z" fill="#3F3F3F" />
       </svg>
+
+      <div>Sort</div>
     </MenuButton>
 
     <transition

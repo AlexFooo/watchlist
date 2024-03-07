@@ -2,7 +2,7 @@
   <div>
     <button
       @click="openModal"
-      class="p-3 aspect-square hover:bg-black/10 rounded-full transition-colors"
+      class="px-4 py-2 hover:bg-black/10 rounded-full transition-colors flex items-center gap-2 text-slate-500"
     >
       <svg
         width="24"
@@ -13,6 +13,8 @@
       >
         <path d="M20 13H13V20H11V13H4V11H11V4H13V11H20V13Z" fill="#3F3F3F" />
       </svg>
+
+      <div>Add stocks</div>
     </button>
     <TransitionRoot appear :show="isOpen" as="template">
       <Dialog as="div" @close="closeModal" class="relative z-10">

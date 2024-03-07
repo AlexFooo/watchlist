@@ -1,6 +1,9 @@
 <template>
   <div>
-    <button @click="openModal" class="p-3 aspect-square hover:bg-black/10 rounded-full transition-colors">
+    <button
+      @click="openModal"
+      class="px-4 py-2 hover:bg-black/10 rounded-full transition-colors flex items-center gap-2 text-slate-500"
+    >
       <svg
         width="24"
         height="24"
@@ -15,6 +18,7 @@
           fill="#3F3F3F"
         />
       </svg>
+      <div>Edit list</div>
     </button>
     <TransitionRoot appear :show="isOpen" as="template">
       <Dialog as="div" @close="closeModal" class="relative z-10">
@@ -50,7 +54,7 @@
                 >
                   <button
                     @click="closeModal"
-                    class="p-2 hover:bg-black/10 rounded-full transition-colors"
+                    class="py-2 pl-2 pr-2 hover:bg-black/10 rounded-full transition-colors flex items-center gap-2 text-white font-normal"
                   >
                     <svg
                       width="24"
@@ -69,8 +73,10 @@
 
                   <button
                     @click="applyChanges"
-                    class="p-2 hover:bg-black/10 rounded-full transition-colors"
+                    class="pr-2 pl-4 py-2 hover:bg-black/20 rounded-full transition-colors flex items-center gap-2 bg-black/10 font-normal"
                   >
+                    <div>Save</div>
+
                     <svg
                       width="24"
                       height="24"

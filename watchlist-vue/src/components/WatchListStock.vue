@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="watchlist-item flex justify-between w-full py-3 px-4 border-b-2 overflow-hidden gap-5 md:gap-20 md:items-center"
+      class="watchlist-item flex justify-between w-full py-3 px-4 border-b overflow-hidden gap-5 md:gap-20 md:items-center"
     >
       <div class="watchlist-item-left flex gap-2 md:items-center md:w-60">
         <slot name="left" />
@@ -23,12 +23,13 @@
           <p
             class="stock-index relative font-sans text-base font-semibold text-black leading-none after:content-link after:flex after:items-center after:absolute after:w-2 after:h-1 after:top-0.5 after:-right-2.5"
           >
-            {{ stock.symbol }}
+            {{ stock.symbol }} <slot name="afterSymbol" />
           </p>
           <p
             class="stock-name truncate max-w-[120px] font-sans text-sm font-light text-[#555] leading-none"
           >
-            {{ stock.company_name || stock.name }}
+            <slot v-if="slots.underSymbol" name="underSymbol" />
+            <template v-else>{{ stock.company_name || stock.name }}</template>
           </p>
         </div>
       </div>
