@@ -1,6 +1,14 @@
 <template>
-  <div>
+  <div class="relative">
     <div
+      :style="
+        isSwiping || showAdditionalInfo
+          ? {
+              transform: lengthX > 60 || showAdditionalInfo ? '-100px' : `translateX(-${lengthX}px)`
+            }
+          : {}
+      "
+      ref="el"
       class="watchlist-item flex justify-between w-full py-3 px-4 border-b overflow-hidden gap-5 md:gap-20 md:items-center"
     >
       <div class="watchlist-item-left flex gap-2 md:items-center md:w-60">
@@ -35,11 +43,20 @@
       </div>
       <slot name="right" />
     </div>
+    <div
+      v-if="isSwiping || showAdditionalInfo"
+      class="bg-red-500 text-white text-center max-w-[60px] absolute right-0 top-0 h-full"
+      :class="showAdditionalInfo && !isSwiping ? '!w-[60px]' : 'w-0'"
+      :style="isSwiping ? { width: lengthX + 'px' } : {}"
+    >
+      <slot name="rightSwipe" :close="closeAdditionalInfo" />
+    </div>
   </div>
 </template>
 <script setup lang="ts">
 import type { SearchStock, Stock } from '@/types'
-import { ref, useSlots } from 'vue'
+import { useSwipe } from '@vueuse/core'
+import { ref, useSlots, watch } from 'vue'
 
 export interface Props {
   stock: Stock | SearchStock
@@ -49,6 +66,23 @@ const props = defineProps<Props>()
 
 const stock = ref<Stock | SearchStock>(props.stock)
 const slots = useSlots()
+const el = ref(null)
+const showAdditionalInfo = ref(false)
+const { direction, isSwiping, lengthX, lengthY } = useSwipe(el)
+watch(
+  () => lengthX.value,
+  (newValue) => {
+    console.log(newValue)
+    if (newValue > 100) {
+      showAdditionalInfo.value = true
+    }
+    if (newValue < 80 && direction.value === 'right') {
+      showAdditionalInfo.value = false
+    }
+  }
+)
 
-// const alertSettingsVisible = ref(false)
+const closeAdditionalInfo = () => {
+  showAdditionalInfo.value = false
+}
 </script>
