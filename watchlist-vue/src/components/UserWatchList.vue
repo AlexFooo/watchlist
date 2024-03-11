@@ -11,7 +11,7 @@
           />
           <SortingListButton @update-sort-field="updateSortField" :sort-field="sortField" />
           <EditingListButton :user-stocks="userStocks" @update-user-stocks="setUserStocks" />
-          <AlertNotificationsListButton />
+          <AlertNotificationsListButton v-if-userId />
         </div>
         <div class="flex gap-2 py-3 w-full md:w-fit">
           <button
@@ -164,6 +164,7 @@
                   </div>
                 </Transition>
                 <button
+                  v-if="userId"
                   @click="openPriceAlertSettings(stock)"
                   class="hover:bg-gray-100 rounded-full p-2 transition-colors hidden md:block"
                 >
@@ -184,7 +185,7 @@
                   </svg>
                 </button>
               </template>
-              <template #rightSwipe="{ close }">
+              <template #rightSwipe="{ close }" v-if="userId">
                 <button
                   @click="
                     () => {
@@ -296,7 +297,7 @@ import AlertSettings from './AlertSettings.vue'
 import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
 import AlertNotificationsListButton from './AlertNotificationsListButton.vue'
 
-const userId = window.userId || 484
+const userId = window.userId || null
 
 const userStocksSymbols = ref<string[] | null>(null)
 const userStocks = ref<Stock[]>([])

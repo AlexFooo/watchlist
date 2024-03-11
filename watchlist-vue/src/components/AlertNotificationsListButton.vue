@@ -106,7 +106,7 @@ export interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits(['updateSortField'])
 
-const userId = window.userId || 484
+const userId = window.userId || null
 
 const alertNotifications = ref([])
 const isLoading = ref(false)

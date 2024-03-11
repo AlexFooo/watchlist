@@ -109,7 +109,7 @@ const stock = computed<Stock>({
 
 const priceAlert = ref<PriceAlert | null>(props.stock?.price_alert || null)
 const mode = ref<'create' | 'update'>('create')
-const userId = window.userId || 484
+const userId = window.userId || null
 
 if (!priceAlert.value) {
   mode.value = 'create'

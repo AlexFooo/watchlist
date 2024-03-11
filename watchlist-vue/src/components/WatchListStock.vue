@@ -72,7 +72,6 @@ const { direction, isSwiping, lengthX, lengthY } = useSwipe(el)
 watch(
   () => lengthX.value,
   (newValue) => {
-    console.log(newValue)
     if (newValue > 100) {
       showAdditionalInfo.value = true
     }
