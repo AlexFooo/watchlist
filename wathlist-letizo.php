@@ -193,8 +193,7 @@ function render_stock_assets_json($args)
 add_shortcode('stock-data', 'render_stock_assets_json');
 
 
-function letizo_get_stocks_data()
-{
+function letizo_get_stocks_data() {
     $config = get_api_config();
     $api = new MassiveStockWidgets\API($config);
     $api->auth_check();
@@ -211,11 +210,15 @@ function letizo_get_stocks_data()
         }
     }
 
-    $symbols = explode(",", $symbols_string);
-    $stock_data = $api->batch_request($symbols);
-    $formated_stock_data = format_stock_data($stock_data);
     
-    foreach ($formated_stock_data as &$stock) {
+    synchronize_watchlist_stock_alerts($user_id, $symbols_string);
+
+    
+
+    $stock_data = $api->batch_request(explode(",", $symbols_string));
+    $formatted_data = format_stock_data($stock_data);
+
+    foreach ($formatted_data as &$stock) {
         $symbol = $stock["symbol"];
         $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : get_current_user_id();
         $user_alerts_json = get_user_meta($user_id, 'letizo_watchlist_stock_alerts', true);
@@ -237,17 +240,17 @@ function letizo_get_stocks_data()
             }
         }
         
-        
         $stock["price_alert"] =  $price_alert;
     }
 
     $response = [
-        'stocks_data' => $formated_stock_data,
+        'stocks_data' => $formatted_data,
     ];
     echo json_encode($response);
 
     die();
 }
+
 
 
 
@@ -330,7 +333,7 @@ function get_sidebar_stocks()
             $item['category'] = $category;
 
             $item['slug'] = 'stocks';
-            // $item['slug'] = ($category === 'bonds') ? 'government-bonds' : (($category === 'forex') ? 'currencies' : strtolower($category));
+            
         }
 
         $result = array_merge($result, $formatted_data);
@@ -345,52 +348,6 @@ function get_sidebar_stocks()
 add_action('wp_ajax_watchlist_get_sidebar_stocks', 'get_sidebar_stocks');
 add_action('wp_ajax_nopriv_watchlist_get_sidebar_stocks', 'get_sidebar_stocks');
 
-
-
-function render_letizo_watchlist_shortcode($atts, $content = null)
-{
-
-
-    $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
-    $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
-    $html_tag = '<div class="letizo-vue-app" data-type="watchlist"></div> ';
-    $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
-    $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
-
-
-    return $html_tag . $script_tag . $css_tag;
-}
-add_shortcode('letizo-watchlist', 'render_letizo_watchlist_shortcode');
-
-function render_letizo_sidebar_stocks_shortcode($atts, $content = null)
-{
-
-    $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
-    $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
-    $html_tag = '<div class="letizo-vue-app" data-type="sidebar"></div> ';
-    $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
-    $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
-
-
-    return $html_tag . $script_tag . $css_tag;
-}
-add_shortcode('letizo-sidebar-stocks', 'render_letizo_sidebar_stocks_shortcode');
-
-
-function render_letizo_add_to_watchlist_shortcode($atts, $content = null)
-{
-    $stockSymbol = $atts['symbol'];
-
-    $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
-    $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
-    $html_tag = '<div class="letizo-vue-app" data-type="add-to-watchlist-button" data-symbol="' . $stockSymbol . '"></div>';
-    $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
-    $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
-
-
-    return $html_tag . $script_tag . $css_tag;
-}
-add_shortcode('letizo-add-stock-to-watchlist-button', 'render_letizo_add_to_watchlist_shortcode');
 
 
 
@@ -506,4 +463,276 @@ function delete_user_stock_alert_data() {
 
 add_action('wp_ajax_watchlist_delete_user_stock_alert_data', 'delete_user_stock_alert_data');
 add_action('wp_ajax_nopriv_watchlist_delete_user_stock_alert_data', 'delete_user_stock_alert_data');
+
+
+
+
+
+function synchronize_watchlist_stock_alerts($user_id, $symbols_string) {
+    $user_alerts_json = get_user_meta($user_id, 'letizo_watchlist_stock_alerts', true);
+    $user_alerts = json_decode($user_alerts_json, true);
+
+    
+    if (!empty($user_alerts)) {
+        
+        $symbols = explode(",", $symbols_string);
+
+        
+        foreach ($user_alerts as $key => $alert) {
+            
+            if (!in_array($alert['symbol'], $symbols)) {
+                
+                if (isset($user_alerts[$key]['price_alert'])) {
+                    $user_alerts[$key]['price_alert'] = null;
+                }
+                
+                unset($user_alerts[$key]);
+            }
+        }
+
+        
+        $user_alerts_json = json_encode(array_values($user_alerts)); 
+        update_user_meta($user_id, 'letizo_watchlist_stock_alerts', $user_alerts_json);
+    }
+}
+
+
+
+
+
+
+function check_alerts_desired_price() {
+    $notifications_to_update = array(); 
+
+    $users_with_alerts = get_users(array(
+        'meta_query' => array(
+            array(
+                'key' => 'letizo_watchlist_stock_alerts',
+                'compare' => 'EXISTS', 
+            ),
+        ),
+    ));
+
+    foreach ($users_with_alerts as $user) {
+        $user_notifications = array(); 
+
+        $user_id = $user->ID;
+        $symbols_string = get_user_meta($user_id, 'letizo_user_watchlist_symbols_string', true);
+        $symbols_array = explode(',', $symbols_string); 
+        
+        
+        $response = wp_remote_post(admin_url('admin-ajax.php'), array(
+            'method' => 'POST',
+            'body' => array(
+                'action' => 'watchlist_letizo_get_stocks_data',
+                'symbols_string' => implode(',', $symbols_array)
+            )
+        ));
+        
+        if (!is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200) {
+            $stocks_data = json_decode(wp_remote_retrieve_body($response), true);
+
+            foreach ($stocks_data['stocks_data'] as $stock) {
+                $symbol = $stock['symbol'];
+                $current_price = $stock['price'];
+                $logo = $stock['logo'];
+                $company_name = $stock['company_name'];
+
+                $user_alerts_json = get_user_meta($user_id, 'letizo_watchlist_stock_alerts', true);
+                $user_alerts = json_decode($user_alerts_json, true);
+
+                foreach ($user_alerts as $key => $alert) {
+                    if ($alert['symbol'] === $symbol) {
+                        $desired_price = $alert['desired_price'];
+                        $price_direction = $alert['price_direction'];
+
+                        if (($price_direction === 'higher' && $current_price <= $desired_price) ||
+                            ($price_direction === 'lower' && $current_price >= $desired_price)) {
+                            $notification_id = substr(uniqid(), -6);
+                            $notification = array(
+                                'symbol' => $symbol,
+                                'company_name' => $company_name,
+                                'logo' => $logo,
+                                'id' => $notification_id,
+                                'desired_price' => $desired_price,
+                                'created_at' => current_time('mysql'),
+                                'updated_at' => current_time('mysql'),
+                                'read' => false
+                            );
+
+                            $user_notifications[] = $notification; 
+                            
+                            unset($user_alerts[$key]);
+                        }
+                    }
+                }
+
+                update_user_meta($user_id, 'letizo_watchlist_stock_alerts', json_encode($user_alerts));
+            }
+        }
+        
+        
+        $existing_notifications = get_user_meta($user_id, 'watchlist_alerts_notification', true);
+        
+       
+        if (is_array($existing_notifications)) {
+            $user_notifications = array_merge($existing_notifications, $user_notifications);
+        }
+        
+       
+        update_user_meta($user_id, 'watchlist_alerts_notification', $user_notifications);
+        
+        
+        $notifications_to_update[$user_id] = $user_notifications;
+    }
+
+    wp_send_json($notifications_to_update);
+}
+
+add_action('wp_ajax_watchlist_check_alerts_desired_price', 'check_alerts_desired_price');
+add_action('wp_ajax_nopriv_watchlist_check_alerts_desired_price', 'check_alerts_desired_price');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function get_watchlist_user_alert_notifications() {
+    $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : get_current_user_id();
+    
+    
+    $watchlist_alerts_notification = get_user_meta($user_id, 'watchlist_alerts_notification', true);
+    
+    
+    wp_send_json($watchlist_alerts_notification);
+}
+
+add_action('wp_ajax_get_watchlist_user_alert_notifications', 'get_watchlist_user_alert_notifications');
+add_action('wp_ajax_nopriv_get_watchlist_user_alert_notifications', 'get_watchlist_user_alert_notifications');
+
+
+
+
+
+function clear_watchlist_alerts_notification() {
+    
+    $user_id = isset($_POST['user_id']) ? $_POST['user_id'] : get_current_user_id();
+    
+    
+    if ($user_id) {
+        
+        $deleted = delete_user_meta($user_id, 'watchlist_alerts_notification');
+        if ($deleted) {
+            wp_send_json_success("true");
+        } else {
+            wp_send_json_error("false");
+        }
+    } else {
+        wp_send_json_error('false');
+    }
+}
+
+
+add_action('wp_ajax_clear_watchlist_alerts_notification', 'clear_watchlist_alerts_notification');
+add_action('wp_ajax_nopriv_clear_watchlist_alerts_notification', 'clear_watchlist_alerts_notification');
+
+
+function mark_all_notifications_as_read() {
+    $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : get_current_user_id();
+    
+    if ($user_id) {
+        $existing_notifications = get_user_meta($user_id, 'watchlist_alerts_notification', true);
+        
+        if (is_array($existing_notifications)) {
+            foreach ($existing_notifications as &$notification) {
+                $notification['read'] = true;
+            }
+            
+            update_user_meta($user_id, 'watchlist_alerts_notification', $existing_notifications);
+            
+            wp_send_json_success();
+        } else {
+            wp_send_json_error('No notifications found for the user.');
+        }
+    } else {
+        wp_send_json_error('User ID not provided or invalid.');
+    }
+}
+
+add_action('wp_ajax_mark_all_notifications_as_read', 'mark_all_notifications_as_read');
+add_action('wp_ajax_nopriv_mark_all_notifications_as_read', 'mark_all_notifications_as_read');
+
+
+
+
+
+
+
+
+function render_letizo_watchlist_shortcode($atts, $content = null)
+{
+
+
+    $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
+    $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
+    $html_tag = '<div class="letizo-vue-app" data-type="watchlist"></div> ';
+    $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
+    $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
+
+
+    return $html_tag . $script_tag . $css_tag;
+}
+add_shortcode('letizo-watchlist', 'render_letizo_watchlist_shortcode');
+
+function render_letizo_sidebar_stocks_shortcode($atts, $content = null)
+{
+
+    $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
+    $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
+    $html_tag = '<div class="letizo-vue-app" data-type="sidebar"></div> ';
+    $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
+    $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
+
+
+    return $html_tag . $script_tag . $css_tag;
+}
+add_shortcode('letizo-sidebar-stocks', 'render_letizo_sidebar_stocks_shortcode');
+
+
+function render_letizo_add_to_watchlist_shortcode($atts, $content = null)
+{
+    $stockSymbol = $atts['symbol'];
+
+    $script_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.js';
+    $css_src = plugin_dir_url(__FILE__) . 'watchlist-vue/dist/index.css';
+    $html_tag = '<div class="letizo-vue-app" data-type="add-to-watchlist-button" data-symbol="' . $stockSymbol . '"></div>';
+    $script_tag = '<script type="module" src="' . $script_src . '"></script> ';
+    $css_tag = '<link rel="stylesheet" href="' . $css_src . '"> ';
+
+
+    return $html_tag . $script_tag . $css_tag;
+}
+add_shortcode('letizo-add-stock-to-watchlist-button', 'render_letizo_add_to_watchlist_shortcode');
+
+
+
+
+
+
+
+
+
+
 
