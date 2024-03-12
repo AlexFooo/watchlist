@@ -496,7 +496,7 @@ function synchronize_watchlist_stock_alerts($user_id, $symbols_string) {
 
 function schedule_check_alerts_desired_price() {
     if (!wp_next_scheduled('check_alerts_desired_price_event')) {
-        wp_schedule_event(time(), 'scrape_4hours', 'check_alerts_desired_price_event');
+        wp_schedule_event(time(), 'ever_4_hours', 'check_alerts_desired_price_event');
     }
 }
 add_action('wp', 'schedule_check_alerts_desired_price');
