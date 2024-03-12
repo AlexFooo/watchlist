@@ -2,7 +2,7 @@
   <div class="relative">
     <div
       :style="
-        isSwiping || showAdditionalInfo
+        (isSwiping || showAdditionalInfo) && slots.rightSwipe
           ? {
               transform: lengthX > 60 || showAdditionalInfo ? '-100px' : `translateX(-${lengthX}px)`
             }
@@ -44,7 +44,7 @@
       <slot name="right" />
     </div>
     <div
-      v-if="isSwiping || showAdditionalInfo"
+      v-if="(isSwiping || showAdditionalInfo) && slots.rightSwipe"
       class="bg-red-500 text-white text-center max-w-[60px] absolute right-0 top-0 h-full"
       :class="showAdditionalInfo && !isSwiping ? '!w-[60px]' : 'w-0'"
       :style="isSwiping ? { width: lengthX + 'px' } : {}"
