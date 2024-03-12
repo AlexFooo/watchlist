@@ -494,17 +494,15 @@ function synchronize_watchlist_stock_alerts($user_id, $symbols_string) {
 
 
 
-function schedule_check_alerts_desired_price()
-{
+function schedule_check_alerts_desired_price() {
     if (!wp_next_scheduled('check_alerts_desired_price_event')) {
-        wp_schedule_event(time(), 'scrape_4 Hours', 'check_alerts_desired_price_event');
+        wp_schedule_event(time(), 'scrape_4hours', 'check_alerts_desired_price_event');
     }
 }
-add_action('wp', 'schedule_check_alerts_desired_price   ');
+add_action('wp', 'schedule_check_alerts_desired_price');
 
 
-function publish_check_alerts_desired_price_event_handler()
-{
+function publish_check_alerts_desired_price_event_handler() {
     check_alerts_desired_price();
 }
 add_action('check_alerts_desired_price_event', 'publish_check_alerts_desired_price_event_handler');
@@ -598,8 +596,7 @@ function check_alerts_desired_price() {
     wp_send_json($notifications_to_update);
 }
 
-add_action('wp_ajax_watchlist_check_alerts_desired_price', 'check_alerts_desired_price');
-add_action('wp_ajax_nopriv_watchlist_check_alerts_desired_price', 'check_alerts_desired_price');
+
 
 
 
