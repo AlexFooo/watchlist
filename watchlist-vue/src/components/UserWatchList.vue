@@ -11,7 +11,7 @@
           />
           <SortingListButton @update-sort-field="updateSortField" :sort-field="sortField" />
           <EditingListButton :user-stocks="userStocks" @update-user-stocks="setUserStocks" />
-          <AlertNotificationsListButton v-if-userId />
+          <AlertNotificationsListButton v-if="userId" />
         </div>
         <div class="flex gap-2 py-3 w-full md:w-fit">
           <button
@@ -100,7 +100,7 @@
               <div class="md:w-24 md:flex">CHANGE %</div>
               <div class="md:w-24 md:flex">MARKET CAP</div>
               <div class="md:w-24"></div>
-              <div class="md:w-10"></div>
+              <div class="md:w-10" v-if="userId"></div>
             </div>
           </div>
           <div v-if="userStocks.length === 0">
